@@ -14,7 +14,9 @@ html
 
 		//- Customise the stylesheet for your site by editing /public/styles/site.less
 		//- All .less files will be automatically compiled and minified in production.
-		link(href="/styles/site.min.css", rel="stylesheet")
+		link(href="/styles/site.css", rel="stylesheet")
+		link(href="/styles/custom.css", rel="stylesheet")
+
 
 		//- This file provides the default styling for the KeystoneJS Content Editor
 		if user && user.canAccessKeystone
@@ -34,27 +36,35 @@ html
 		block head
 
 	//- HTML BODY
-	body
+	body(ng-app="Nybryx")
 
 		//- HEADER
 		#header: .container
-
 			//- Customise your site's navigation by changing the navLinks Array in ./routes/middleware.js
 			//- ... or completely change this header to suit your design.
 
 			div(role="navigation").navbar.navbar-default
 				.container-fluid
 					.navbar-header
+						//- button.navbar-toggle(type='button', data-toggle='collapse')
 						button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+
+					if data.categories
+						div().col-sm-4.col-md-3
+							h2 Categories
+							.list-group
+								//a(href='/post/category', class=!data.category ? 'active' : false).list-group-item All Categories
+								each cat in data.categories
+									a(href='/post/category/' + cat.key, class=data.category && data.category.id == cat.id ? 'active' : false).list-group-item= cat.name
 							span.sr-only Toggle navigation
 							span.icon-bar
 							span.icon-bar
 							span.icon-bar
-						a.navbar-brand(href='/') Nybryx
+					a.navbar-brand(href='/') Nybryx
 					.collapse.navbar-collapse
-						ul.nav.navbar-nav.navbar-left
-							each link in navLinks
-								li(class=(section == link.key ? 'active' : null)): a(href=link.href)= link.label
+						//ul.nav.navbar-nav.navbar-left
+						//	each link in navLinks
+						//		li(class=(section == link.key ? 'active' : null)): a(href=link.href)= link.label
 						ul.nav.navbar-nav.navbar-right
 							if user
 								if user.canAccessKeystone
@@ -95,6 +105,8 @@ html
 		//- you can upgrade to 2.1.3 (also bundled) for better performance.
 		script(src='/js/jquery/jquery-1.11.2.min.js')
 		script(src='/js/angular/angular.js')
+		script(src='/js/site.js')
+
 
 
 		//- Customise which Bootstrap javascript files are served by including
@@ -105,6 +117,15 @@ html
 		//- which generate links to edit content for users who can access Keystone
 		if user && user.canAccessKeystone
 			script(src='/keystone/js/content/editor.js')
+
+		//- if data.posts
+		//- 	script(src='#{data.posts}')
+		//- else
+		//- 	script(src='/nocunt.postsssssss.js')
+
+		if data.post && data.post.customScript
+			script.
+				#{data.post.customScript}
 
 		//- Add scripts that are globally required by your site here.
 
