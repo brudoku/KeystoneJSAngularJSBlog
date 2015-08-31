@@ -16,6 +16,7 @@ mixin post(post)
 						|  
 			if post.author
 				| by #{post.author.name.first}
+				<br /> #{post.categories[0]}
 		if post.image.exists
 			img(src=post._.image.fit(160,160)).img.pull-right
 		p!= post.content.brief
@@ -23,10 +24,9 @@ mixin post(post)
 			p.read-more: a(href='/post/' + post.slug) Read more...
 
 block intro
-	//.container
-	//	h1= data.category ? data.category.name : 'Blog (index file)'
 
 block content
+
 	.container: .row
 		.col-md-9
 			if filters.category && !data.category

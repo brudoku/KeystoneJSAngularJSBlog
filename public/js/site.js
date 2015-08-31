@@ -1,7 +1,17 @@
-var App = angular.module('Nybryx', []);
+var app = angular.module('Nybryx', ['ngRoute']);
 
-// angular.module('Nybryx.controllers', []).controller('NavCtrl', function($scope){
-// 	$scope.test = 'test'
-// });
+app.config(function($routeProvider){
+	$routeProvider.when('/',{
+		templateUrl:'app.html',
+		controller:'PostViewCtrl'})
+});
 
-function NavCtrl(){}
+app.controller('PostViewCtrl', function($scope, $http){
+	$scope.posts = [];
+	$http.get('/api/post/list').then(function(response){
+		console.log('response')
+		console.log(response.data.posts);
+		$scope.posts = response.data.posts;
+	});
+});
+
