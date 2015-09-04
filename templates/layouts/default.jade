@@ -6,42 +6,41 @@ html
 		meta(http-equiv="X-UA-Compatible" content="IE=edge")
 		title= title || 'Nybryx'
 		link(rel="shortcut icon", href="/favicon.ico", type="image/x-icon")
-		link(href="/styles/site.css", rel="stylesheet")
-		link(href="/styles/custom.css", rel="stylesheet")
+		link(href="/assets/styles/site.css", rel="stylesheet")
+		link(href="/assets/styles/custom.css", rel="stylesheet")
 		if user && user.canAccessKeystone
 			link(href="/keystone/styles/content/editor.min.css", rel="stylesheet")
 		block css
 		block head
-	body(ng-app="Nybryx")
-		#header: .container
-			a.navbar-brand(href='/') Nybryx
-			div(ng-controller="PostViewCtrl").navbar.navbar-default
-				li(ng-repeat="post in posts"){{post.title}}
-			div(role="navigation").navbar.navbar-default
-				.container-fluid
-					.navbar-header
-						button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
-					if data.categories
-						.list-group
-							each cat in data.categories
-								a(href='/post/category/' + cat.key, class=data.category && data.category.id == cat.id ? 'active' : false).list-group-item= cat.name
-						if user
-							if user.canAccessKeystone
-								li: a(href='/keystone') Open Keystone
-							li: a(href='/keystone/signout') Sign Out
-						else
-							li: a(href='/keystone/signin') Sign In
+		body(ng-app="Nybryx")
+			#header: .container
+				a(href='/#/') Nybryx
+				div(ng-view)
 
+			//- div(role="navigation").navbar.navbar-default
+			//- 	.container-fluid
+			//- 		.navbar-header
+			//- 			button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+			//- 		if data.categories
+			//- 			.list-group
+			//- 				each cat in data.categories
+			//- 					a(href='/post/category/' + cat.key, class=data.category && data.category.id == cat.id ? 'active' : false).list-group-item= cat.name
+			//- 			if user
+			//- 				if user.canAccessKeystone
+			//- 					li: a(href='/keystone') Open Keystone
+			//- 				li: a(href='/keystone/signout') Sign Out
+			//- 			else
+			//- 				li: a(href='/keystone/signin') Sign In
 		#body
 			block intro
 			block content
 		.container: #footer
-		script(src='/js/jquery/jquery-1.11.2.min.js')
-		script(src='/js/angular/angular.js')
-		script(src='/js/angular/angular-route.js')
-		script(src='/js/libs/lodash.js')
-		script(src='/js/site.js')
-		script(src='/js/bootstrap/bootstrap-3.3.4.min.js')
+		script(src='/assets/js/jquery/jquery-1.11.2.min.js')
+		script(src='/assets/js/bootstrap/bootstrap-3.3.4.min.js')
+		script(src='/assets/js/angular/angular.js')
+		script(src='/assets/js/angular/angular-route.js')
+		script(src='/assets/js/libs/lodash.js')
+		script(src='/app.js')
 		if user && user.canAccessKeystone
 			script(src='/keystone/js/content/editor.js')
 		if data.post && data.post.customScript

@@ -27,3 +27,15 @@ exports.get = function(req, res) {
 		});
 	});
 }
+
+/** 
+ * Get Post by slug
+ */
+exports.getBySlug = function(req, res) {
+	Post.model.find().where('slug', req.params.slug).exec(function(err, item) {	
+		var firstItem = item[0];
+        res.apiResponse({
+			post: firstItem
+		});
+    });
+}
