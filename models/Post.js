@@ -1,6 +1,5 @@
 var keystone = require('keystone');
 var Types = keystone.Field.Types;
-
 /**
  * Post Model
  * ==========
@@ -21,10 +20,16 @@ Post.add({
 		brief: { type: Types.Html, wysiwyg: true, height: 150 },
 		extended: { type: Types.Html, wysiwyg: true, height: 400 }
 	},
-	categories: { type: Types.Relationship, ref: 'PostCategory', many: true }
-	,
-	customScript: { type: String }
-
+	categories: { type: Types.Relationship, ref: 'PostCategory', many: true },
+	customScript: { type: String },
+	scriptUpload: {
+		type: Types.LocalFiles,
+		dest: 'public/data',
+		// prefix: '/data',
+		filename: function(item, file){
+			return item.id + '.' + file.extension
+		}	
+	}
 });
 
 Post.schema.virtual('content.full').get(function() {
@@ -32,4 +37,5 @@ Post.schema.virtual('content.full').get(function() {
 });
 
 Post.defaultColumns = 'title, state|20%, author|20%, publishedDate|20%';
+
 Post.register();

@@ -1,7 +1,9 @@
-singleView.HTML!!
 <div class="panel">
 	<div>
 		<p ng-bind-html="content"></p>
 		<p ng-bind="customScript"></p>
+		<div ng-if="hasImage(image)">
+			<img ng-src="{{image}}" />
+		</div>
 	</div>
 </div>
