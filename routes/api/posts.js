@@ -2,6 +2,8 @@ var async = require('async'),
 	keystone = require('keystone');
 
 var Post = keystone.list('Post');
+var PostCategory = keystone.list('PostCategory');
+
 
 /**
  * List Posts
@@ -38,4 +40,15 @@ exports.getBySlug = function(req, res) {
 			post: firstItem
 		});
     });
+}
+
+/*
+* Get categories
+*/
+exports.getCategories = function(req, res){
+	PostCategory.model.find().sort('name').exec(function(err, categories) {
+		res.apiResponse({
+			postCategories: categories
+		})
+	});
 }
