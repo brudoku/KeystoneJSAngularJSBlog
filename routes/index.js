@@ -45,5 +45,5 @@ exports = module.exports = function(app) {
 
 	app.get('/api/post/list', keystone.middleware.api, routes.api.posts.list);
 	app.get('/api/post/:slug', keystone.middleware.api, routes.api.posts.getBySlug);
-	
+	app.get('/api/getCategories', keystone.middleware.api, routes.api.posts.getCategories);
 };
