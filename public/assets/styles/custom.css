@@ -32,3 +32,24 @@ article header{}
 .list-group-item{
 	display: inline-block;
 }
+
+.post-list li{
+}
+
+.post-list .panel{	
+	margin: 10px;
+	width: 150px;
+	height: 150px;
+	display: inline-block;
+	border: solid 1px #bbb;
+	padding: 15px;
+}
+
+.category-list h3{
+	display: inline;	
+}
+.category-list li{
+	display: inline;
+	list-style-type: none;
+	margin: 0px 10px;
+}

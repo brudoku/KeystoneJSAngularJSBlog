@@ -5,34 +5,50 @@ app.config(function($stateProvider,  $urlRouterProvider){
 		.state('index',{
 			url: "/",
 			templateUrl: '/components/home/homeView.html',
-			controller: 'PostViewCtrl'
-
+			controller: 'PostViewCtrl',
+			resolve: {
+				postData: function (PostsService) {
+					return PostsService.posts();
+				},
+				categoryData: function (PostsService) {
+					return PostsService.cats();
+				}
+			}
+		})
+		.state('index.filter',{
+			url: "/category/:code",
+			templateUrl: '/components/single/filterView.html',
+			controller: 'CatViewCtrl'
 		})
 		.state('viewSingle',{
 			url: "/post/:slug/",
 			templateUrl: '/components/single/singleView.html',
-			controller: 'SingleViewCtrl'
-			/*
-			,resolve: {
-				runTest: ['$ocLazyLoad', function ($ocLazyLoad) {
-					return $ocLazyLoad.load('/components/single/test.js')
-				}]
-			}
-			*/
+			controller: 'SingleViewCtrl as singleView'
 		})
 	$urlRouterProvider.otherwise('/');
 });
 
-app.controller('PostViewCtrl', function($scope, $http){
-	$scope.posts = [];
-	log('post')
-	$http.get('/api/post/list').then(function(response){
-		$scope.posts = response.data.posts;
-	});
+app.controller('CatCtrl', function CatCtrl($scope, $http){
+	var catControl = this;
+	// $scope.categories = [];
+	// $http.get('/api/getCategories').then(function(response){
+	// 	$scope.categories = response.data.postCategories;
+	// });
+});
+
+app.controller('CatViewCtrl', function CatViewCtrl(){
+	log('zz');
+});
+
+app.controller('PostViewCtrl', function($scope, $http, postData, categoryData){
+	$scope.posts = postData.posts;
+	$scope.categories = categoryData.postCategories;
+	log(categoryData.postCategories)
+
 });
 
 app.controller('SingleViewCtrl', function($scope, $http, $stateParams, $sce, $ocLazyLoad){
-	log('single');
+	var singleView = this;
 	$scope.hasImage = function(postImage){
 		return (postImage == '' ? false : true)
 	}
@@ -55,6 +71,40 @@ app.controller('SingleViewCtrl', function($scope, $http, $stateParams, $sce, $oc
 			console.log('noscript')
 		}
 	});
+});
+
+app.service('PostsService', function($http, $q, $timeout){
+	var getPosts = function(){
+		return function(){
+			var deferred = $q.defer();
+			$http.get('/api/post/list').then(function(response){
+				deferred.resolve(response.data)
+			});
+			return deferred.promise;
+		}();
+	}
+	var getCats = function(){
+		return function(){
+			var deferred = $q.defer();
+			$http.get('/api/getCategories').then(function(response){
+				deferred.resolve(response.data)
+			});
+			return deferred.promise;
+		}()
+	}
+
+	var getSingle = function (postId) {
+		return function() {
+			log('scats done')
+			var deferred = $q.defer();
+			$http.get('/api/post/' + postId).then(function (response) {
+				deferred.resolve(response.data)
+			});
+			return deferred.promise
+		}()
+	}
+
+	return {posts: getPosts, cats: getCats}
 });
 
 function log(msg){
