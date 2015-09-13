@@ -1,4 +1,4 @@
-var app = angular.module('app', ['ui.router', 'oc.lazyLoad'])
+var app = angular.module('app', ['ui.router', 'oc.lazyLoad']);
 
 app.config(function($stateProvider,  $urlRouterProvider){
 	$stateProvider
@@ -8,17 +8,12 @@ app.config(function($stateProvider,  $urlRouterProvider){
 			controller: 'PostViewCtrl',
 			resolve: {
 				postData: function (PostsService) {
-					return PostsService.posts();
+					return PostsService.postsFunction();
 				},
 				categoryData: function (PostsService) {
-					return PostsService.cats();
+					return PostsService.catsFunction();
 				}
 			}
-		})
-		.state('index.filter',{
-			url: "/category/:code",
-			templateUrl: '/components/single/filterView.html',
-			controller: 'CatViewCtrl'
 		})
 		.state('viewSingle',{
 			url: "/post/:slug/",
@@ -36,14 +31,17 @@ app.controller('CatCtrl', function CatCtrl($scope, $http){
 	// });
 });
 
-app.controller('CatViewCtrl', function CatViewCtrl(){
-	log('zz');
-});
-
 app.controller('PostViewCtrl', function($scope, $http, postData, categoryData){
-	$scope.posts = postData.posts;
 	$scope.categories = categoryData.postCategories;
-	log(categoryData.postCategories)
+
+	//add category name to post data rather than use category id
+	$scope.posts = _.map(postData.posts, function (post, index) {
+	    var catName = _.filter(categoryData.postCategories, function (cat) {
+	        return (post.categories[0] == cat._id)
+	    });
+	    return _.extend(post, {catName: catName[0].key})
+	});
+	console.log($scope.posts);	
 
 });
 
@@ -67,8 +65,6 @@ app.controller('SingleViewCtrl', function($scope, $http, $stateParams, $sce, $oc
 				files: filesToLoad,
 				cache: false
 			}]);
-		}else{
-			console.log('noscript')
 		}
 	});
 });
@@ -92,7 +88,6 @@ app.service('PostsService', function($http, $q, $timeout){
 			return deferred.promise;
 		}()
 	}
-
 	var getSingle = function (postId) {
 		return function() {
 			log('scats done')
@@ -103,10 +98,36 @@ app.service('PostsService', function($http, $q, $timeout){
 			return deferred.promise
 		}()
 	}
-
-	return {posts: getPosts, cats: getCats}
+	return {postsFunction: getPosts, catsFunction: getCats}
 });
 
 function log(msg){
 	console.log(msg)
 }
+
+
+/*
+$rootScope.$on('$stateChangeStart', function (event, nextState, currentState) {
+    if (!isAuthenticated(nextState)) {
+        console.debug('Could not change route! Not authenticated!');
+        $rootScope.$broadcast('$stateChangeError');
+        event.preventDefault();
+        $state.go('login');
+    }
+});
+
+onEnter: ["$state",'PostsService', function (PostsService) {
+var foo = PostsService;
+
+log('enter')
+
+log(foo)
+}],
+onExit: ["$state",'PostsService', function (PostsService) {
+var foo = PostsService;
+log('exit')
+
+log(foo)
+}]			
+
+*/

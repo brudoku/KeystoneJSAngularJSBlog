@@ -53,3 +53,17 @@ article header{}
 	list-style-type: none;
 	margin: 0px 10px;
 }
+
+.panel.code{
+	background: #ffcc33;
+}
+.panel.music{
+	background: #3366FF;
+}
+.panel.other{
+	background: #009966;
+}
+
+a.text-success, .text-success{
+	font-size: 20px;
+}
