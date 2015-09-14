@@ -1,4 +1,4 @@
-var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate']);
+var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate', 'anim-in-out']);
 
 app.config(function($stateProvider,  $urlRouterProvider){
 	$stateProvider

@@ -1,5 +1,6 @@
 body{
-	background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iNSIgaGVpZ2h0PSI1IiBmaWxsPSIjZmZmIj48L3JlY3Q+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNjY2MiPjwvcmVjdD4KPC9zdmc+")
+	background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iNSIgaGVpZ2h0PSI1IiBmaWxsPSIjZmZmIj48L3JlY3Q+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNjY2MiPjwvcmVjdD4KPC9zdmc+");
+	overflow: hidden;
 }
 #header {
 	margin-top: 30px;
@@ -84,13 +85,15 @@ a.text-success, .text-success{
   /* As of 1.4.4, this must always be set: it signals ngAnimate
     to not accidentally inherit a delay property from another CSS class */
   transition-duration: 0s;
-	opacity: 0
-  
+	opacity: 0  
 }
-.main.ng-leave-active{
-	opacity: 0
 
+.anim-in-out .ng-leave{
+	display: none;
+	background: red !important;
+	border: solid 2px #00f;
 }
-.main.ng-leave{
-	/*opacity: 0.5*/
+
+.anim-out-setup{
+	opacity: 0;
 }
