@@ -1,12 +1,16 @@
+body{
+	background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iNSIgaGVpZ2h0PSI1IiBmaWxsPSIjZmZmIj48L3JlY3Q+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNjY2MiPjwvcmVjdD4KPC9zdmc+")
+}
 #header {
 	margin-top: 30px;
 }
-
+.logo{
+	margin-left: 10px;
+	font-size: 20px;
+}
 #footer {
 	margin-top: 30px;
-	border-top: 1px solid @gray-lighter;
 	padding-top: 30px;
-	color: @gray-light;
 }
 
 .gallery-image img {
@@ -66,4 +70,27 @@ article header{}
 
 a.text-success, .text-success{
 	font-size: 20px;
+}
+.main{
+	-webkit-transition: all 500ms ease;
+}
+.main.ng-enter{
+	/*opacity: 0*/
+}
+.main..ng-enter-stagger {
+  /* this will have a 100ms delay between each successive leave animation */
+  transition-delay: 0.1s;
+
+  /* As of 1.4.4, this must always be set: it signals ngAnimate
+    to not accidentally inherit a delay property from another CSS class */
+  transition-duration: 0s;
+	opacity: 0
+  
+}
+.main.ng-leave-active{
+	opacity: 0
+
+}
+.main.ng-leave{
+	/*opacity: 0.5*/
 }

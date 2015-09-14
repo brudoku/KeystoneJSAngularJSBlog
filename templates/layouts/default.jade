@@ -6,33 +6,35 @@ html
 		meta(http-equiv="X-UA-Compatible" content="IE=edge")
 		title= title || 'Nybryx'
 		link(rel="shortcut icon", href="/favicon.ico", type="image/x-icon")
+		link(href="/assets/styles/animate.css", rel="stylesheet")
 		link(href="/assets/styles/site.css", rel="stylesheet")
 		link(href="/assets/styles/custom.css", rel="stylesheet")
+
 		if user && user.canAccessKeystone
 			link(href="/keystone/styles/content/editor.min.css", rel="stylesheet")
 		block css
 		block head
 		body(ng-app="app")
-			#header: .container
-				a(href='/#/') Nybryx
+			#header.container
+				a(href='/#/' class="logo") Nybryx
 				div(ng-controller="CatCtrl")
-					div.panel
-						//- <input type="text" ng-model="catControl.greeting.message" />
-						//- li(ng-repeat="cat in categories")
-						//- 	a(ui-sref="/category/{{cat.name}}")
-						//- 		{{cat.name}}
-				<div ui-view></div>
-		#body
-			block intro
-			block content
+					div.panel.category-list
+						li(ng-repeat="cat in categories")
+							a(href="#/category/{{cat.name}}")
+								{{cat.name}}
+			#main.container
+				<div ui-view class="main animate"></div>
 		.container: #footer
 		script(src='/assets/js/jquery/jquery-1.11.2.min.js')
 		script(src='/assets/js/bootstrap/bootstrap-3.3.4.min.js')
 		script(src='/assets/js/angular/angular.js')
 		script(src='/assets/js/angular/angular-ui-router.js')
+		script(src='/assets/js/angular/angular-animate.js')			
 		script(src='/assets/js/libs/ocLazyLoad.js')
 		script(src='/assets/js/libs/lodash.js')
+		script(src='/assets/js/angular/columns-directive.js')
 		script(src='/app.js')
+
 		if user && user.canAccessKeystone
 			script(src='/keystone/js/content/editor.js')
 		if data.post && data.post.customScript

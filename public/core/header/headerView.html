@@ -1,3 +1,10 @@
-<header>
-header header header
-</header>
+<div ng-controller="CatCtrl">
+	<div class="panel category-list">
+		<li ng-repeat="cat in categories">
+			<a ui-sref="/category/{{cat.name}}">
+				{{cat.name}}
+			</a>
+		</li>
+	</div>
+</div>
+<div ui-view></div>
