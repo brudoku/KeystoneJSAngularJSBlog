@@ -1,6 +1,6 @@
 body{
 	background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iNSIgaGVpZ2h0PSI1IiBmaWxsPSIjZmZmIj48L3JlY3Q+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNjY2MiPjwvcmVjdD4KPC9zdmc+");
-	overflow: hidden;
+	overflow-x: hidden;
 }
 #header {
 	margin-top: 30px;
@@ -41,10 +41,10 @@ article header{}
 .post-list li{
 }
 
-.post-list .panel{	
-	margin: 10px;
-	width: 150px;
-	height: 150px;
+.post-list .panel{
+	margin: 25px;
+	width: 250px;
+	height: 154px;
 	display: inline-block;
 	border: solid 1px #bbb;
 	padding: 15px;
@@ -58,7 +58,15 @@ article header{}
 	list-style-type: none;
 	margin: 0px 10px;
 }
-
+a.code{
+	color: #ffcc33
+}
+a.music{
+	color: #3366FF
+}
+a.other{
+	color: #009966
+}
 .panel.code{
 	background: #ffcc33;
 }
@@ -78,7 +86,7 @@ a.text-success, .text-success{
 .main.ng-enter{
 	/*opacity: 0*/
 }
-.main..ng-enter-stagger {
+.main.ng-enter-stagger {
   /* this will have a 100ms delay between each successive leave animation */
   transition-delay: 0.1s;
 
@@ -94,6 +102,16 @@ a.text-success, .text-success{
 	border: solid 2px #00f;
 }
 
+.anim-in, .anim-out, .ng-animate{
+	position:absolute;
+}
+.anim-in{
+	/*animation: fadeInLeftBig 1s;*/
+}
+.anim-out{
+	animation: fadeOut 1s;
+}
+
 .anim-out-setup{
-	opacity: 0;
+	position:absolute
 }
