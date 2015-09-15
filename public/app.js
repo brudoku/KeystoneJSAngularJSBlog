@@ -28,13 +28,6 @@ app.config(function($stateProvider,  $urlRouterProvider){
 					}
 				}
 		})
-		.state('categories.subview',{
-			url: "/category/:categoryId",
-				templateUrl: '/components/home/filterView.subview.html',
-				controller: function($scope){
-					$scope.foobar = 'foobar'
-				}
-		})
 		.state('single',{
 			url: "/:slug/",
 			templateUrl: '/components/single/singleView.html',
@@ -42,6 +35,9 @@ app.config(function($stateProvider,  $urlRouterProvider){
 			resolve: {
 				singlePost: function (PostsService, $stateParams) {
 					return PostsService.singlePostFn($stateParams.slug);
+				},
+				postData: function (PostsService) {
+					return PostsService.postsFunction();
 				}
 			}
 		})
@@ -56,7 +52,20 @@ app.controller('PostViewCtrl', function($scope, postData, categoryData, $ocLazyL
 	});
 });
 
-app.controller('SingleViewCtrl', function($scope, singlePost, $sce, $ocLazyLoad){
+app.controller('SingleViewCtrl', function($scope, postData, singlePost, $sce, $ocLazyLoad){
+	var prevNext = _.each(postData.posts, function(post,index){		
+		if(singlePost.post._id==post._id){
+			var objPrevNext = {};
+			objPrevNext.prevSlug = index > 0 ? postData.posts[index-1].slug : 'noneBefore';
+			objPrevNext.prevTitle = index > 0 ? postData.posts[index-1].title : 'noneBefore';
+			objPrevNext.nextSlug = index <= postData.posts.length ? postData.posts[index+1].slug : 'noneAfter';
+			objPrevNext.nextTitle = index <= postData.posts.length ? postData.posts[index+1].title : 'noneAfter';
+			log(objPrevNext)
+			$scope.prevNext = objPrevNext;
+			return
+		}
+	});
+	log(prevNext);
 	$scope.content = $sce.trustAsHtml(singlePost.post.content.extended);
 	if(singlePost.post.image){
 		$scope.image = singlePost.post.image.url;
@@ -82,6 +91,10 @@ app.controller('CatCtrl', function($scope, $http, PostsService){
 
 app.controller('CatFilterCtrl', function($scope, postData, categoryData, $stateParams){
 	log('CatFilterCtrl: '+$stateParams.categoryId);
+	log(categoryData)
+	$scope.direction = function(){
+
+	}
 	$scope.posts = _.filter(_.map(postData.posts, function (post, index) {
 	    var catName = _.filter(categoryData.postCategories, function (cat) {
 	        return post.categories[0] == cat._id
@@ -113,7 +126,7 @@ app.service('PostsService', function($http, $q, $timeout){
 
 	}
 	var getSingle = function (postId) {
-		return function() {			
+		return function() {
 			var deferred = $q.defer();
 			$http.get('/api/post/' + postId).then(function (response) {
 				deferred.resolve(response.data)

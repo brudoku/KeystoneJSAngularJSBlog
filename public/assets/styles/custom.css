@@ -80,38 +80,39 @@ a.other{
 a.text-success, .text-success{
 	font-size: 20px;
 }
-.main{
-	-webkit-transition: all 500ms ease;
-}
-.main.ng-enter{
-	/*opacity: 0*/
-}
-.main.ng-enter-stagger {
-  /* this will have a 100ms delay between each successive leave animation */
-  transition-delay: 0.1s;
-
-  /* As of 1.4.4, this must always be set: it signals ngAnimate
-    to not accidentally inherit a delay property from another CSS class */
-  transition-duration: 0s;
-	opacity: 0  
-}
-
-.anim-in-out .ng-leave{
-	display: none;
-	background: red !important;
-	border: solid 2px #00f;
-}
 
 .anim-in, .anim-out, .ng-animate{
 	position:absolute;
 }
 .anim-in{
-	/*animation: fadeInLeftBig 1s;*/
 }
 .anim-out{
-	animation: fadeOut 1s;
 }
-
 .anim-out-setup{
 	position:absolute
+}
+
+.single-nav{
+	width: 100%;
+	height: 20px;
+	padding: 2px;
+}
+
+.left-nav, .right-nav{
+	background: dodgerblue;
+/*	height: 10px;*/
+	/*width: 30px;*/
+}
+a, a.left-nav , a.right-nav{
+	color: #fff;
+	font-weight: bold;
+}
+.left-nav{
+	float: left;
+	/*display: inline-block;;*/
+}
+
+.right-nav{
+	float: right;
+	/*display: inline-block;;*/
 }
