@@ -1,147 +1,170 @@
 var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate', 'anim-in-out']);
 
-app.config(function($stateProvider,  $urlRouterProvider){
+app.config(function($stateProvider, $urlRouterProvider) {
 	$stateProvider
-		.state('posts',{
+		.state('posts', {
 			url: "/",
 			templateUrl: '/components/home/homeView.html',
 			controller: 'PostViewCtrl',
 			resolve: {
-				postData: function (PostsService) {
+				postData: function(PostsService) {
 					return PostsService.postsFunction();
 				},
-				categoryData: function (PostsService) {
+				categoryData: function(PostsService) {
 					return PostsService.catsFunction();
 				}
 			}
 		})
-		.state('categories',{
+		.state('categories', {
 			url: "/category/:categoryId",
-				templateUrl: '/components/home/filterView.html',
-				controller: 'CatFilterCtrl',
-				resolve: {
-					postData: function (PostsService) {
-						return PostsService.postsFunction();
-					},
-					categoryData: function (PostsService) {
-						return PostsService.catsFunction();
-					}
+			templateUrl: '/components/home/filterView.html',
+			controller: 'CatFilterCtrl',
+			resolve: {
+				postData: function(PostsService) {
+					return PostsService.postsFunction();
+				},
+				categoryData: function(PostsService) {
+					return PostsService.catsFunction();
 				}
+			}
 		})
-		.state('single',{
+		.state('single', {
 			url: "/:slug/",
 			templateUrl: '/components/single/singleView.html',
 			controller: 'SingleViewCtrl',
 			resolve: {
-				singlePost: function (PostsService, $stateParams) {
+				singlePost: function(PostsService, $stateParams) {
 					return PostsService.singlePostFn($stateParams.slug);
 				},
-				postData: function (PostsService) {
+				postData: function(PostsService) {
 					return PostsService.postsFunction();
 				}
 			}
 		})
 });
 
-app.controller('PostViewCtrl', function($scope, postData, categoryData, $ocLazyLoad){
-	$scope.posts = _.map(postData.posts, function (post, index) {
-	    var catName = _.filter(categoryData.postCategories, function (cat) {
-	        return (post.categories[0] == cat._id)
-	    })[0].key;
-	    return _.extend(post, {catName: catName})
+app.controller('PostViewCtrl', function($scope, postData, categoryData, $ocLazyLoad) {
+	$scope.posts = _.map(postData.posts, function(post, index) {
+		var catName = _.filter(categoryData.postCategories, function(cat) {
+			return (post.categories[0] == cat._id)
+		})[0].key;
+		return _.extend(post, {
+			catName: catName
+		})
 	});
 });
 
-app.controller('SingleViewCtrl', function($scope, postData, singlePost, $sce, $ocLazyLoad){
-	var prevNext = _.each(postData.posts, function(post,index){		
-		if(singlePost.post._id==post._id){
+app.controller('SingleViewCtrl', function($scope, postData, singlePost, $sce, $ocLazyLoad) {
+	var prevNext = _.each(postData.posts, function(post, index, postArray) {
+		if (singlePost.post._id == post._id) {
 			var objPrevNext = {};
-			objPrevNext.prevSlug = index > 0 ? postData.posts[index-1].slug : 'noneBefore';
-			objPrevNext.prevTitle = index > 0 ? postData.posts[index-1].title : 'noneBefore';
-			objPrevNext.nextSlug = index <= postData.posts.length ? postData.posts[index+1].slug : 'noneAfter';
-			objPrevNext.nextTitle = index <= postData.posts.length ? postData.posts[index+1].title : 'noneAfter';
-			log(objPrevNext)
+			if(index-1 < 0){
+				objPrevNext.prevSlug = '';
+				objPrevNext.prevTitle = '';
+			}else{
+				objPrevNext.prevSlug = index > 0 ? postArray[index - 1].slug : 'noneBefore';
+				objPrevNext.prevTitle = index > 0 ? postArray[index - 1].title : 'noneBefore';
+			}
+			if(index+1 == postArray.length){
+				objPrevNext.nextSlug = '';
+				objPrevNext.nextTitle = '';
+			}else{
+				objPrevNext.nextSlug = index <= postArray.length ? postArray[index + 1].slug : 'noneAfter';
+				objPrevNext.nextTitle = index <= postArray.length ? postArray[index + 1].title : 'noneAfter';
+			}
 			$scope.prevNext = objPrevNext;
 			return
 		}
 	});
 	log(prevNext);
+
+	$scope.hasPrev = function(){
+
+	}
 	$scope.content = $sce.trustAsHtml(singlePost.post.content.extended);
-	if(singlePost.post.image){
+	if (singlePost.post.image) {
 		$scope.image = singlePost.post.image.url;
 	}
 	$scope.scriptUpload = singlePost.post.scriptUpload;
-	if($scope.scriptUpload){
+	if ($scope.scriptUpload) {
 		var filesToLoad = _.map($scope.scriptUpload, function(file) {
-			return 'data/'+file.filename;
+			return 'data/' + file.filename;
 		})
 		$ocLazyLoad.load([{
 			files: filesToLoad,
 			cache: false
 		}]);
 	}
-	$scope.hasImage = function(postImage){return (postImage == '' ? false : true)}
+	$scope.hasImage = function(postImage) {
+		return (postImage == '' ? false : true)
+	}
 });
 
-app.controller('CatCtrl', function($scope, $http, PostsService){
-	PostsService.catsFunction().then(function(res){
+app.controller('CatCtrl', function($scope, $http, PostsService) {
+	PostsService.catsFunction().then(function(res) {
 		$scope.categories = res.postCategories;
 	});
 });
 
-app.controller('CatFilterCtrl', function($scope, postData, categoryData, $stateParams){
-	log('CatFilterCtrl: '+$stateParams.categoryId);
+app.controller('CatFilterCtrl', function($scope, postData, categoryData, $stateParams) {
+	log('CatFilterCtrl: ' + $stateParams.categoryId);
 	log(categoryData)
-	$scope.direction = function(){
+	$scope.direction = function() {
 
 	}
-	$scope.posts = _.filter(_.map(postData.posts, function (post, index) {
-	    var catName = _.filter(categoryData.postCategories, function (cat) {
-	        return post.categories[0] == cat._id
-	    })[0].key;
-	    return _.extend(post, {catName: catName})
+	$scope.posts = _.filter(_.map(postData.posts, function(post, index) {
+		var catName = _.filter(categoryData.postCategories, function(cat) {
+			return post.categories[0] == cat._id
+		})[0].key;
+		return _.extend(post, {
+			catName: catName
+		})
 	}), function(elem) {
 		return elem.catName == $stateParams.categoryId.toLowerCase();
 	});
 });
 
-app.service('PostsService', function($http, $q, $timeout){
-	var getPosts = function(){
-		return function(){
+app.service('PostsService', function($http, $q, $timeout) {
+	var getPosts = function() {
+		return function() {
 			var deferred = $q.defer();
-			$http.get('/api/post/list').then(function(response){
+			$http.get('/api/post/list').then(function(response) {
 				deferred.resolve(response.data)
 			});
 			return deferred.promise;
 		}();
 	}
-	var getCats = function(){
-		return function(){
+	var getCats = function() {
+		return function() {
 			var deferred = $q.defer();
-			$http.get('/api/getCategories').then(function(response){
+			$http.get('/api/getCategories').then(function(response) {
 				deferred.resolve(response.data)
 			});
 			return deferred.promise;
 		}();
 
 	}
-	var getSingle = function (postId) {
+	var getSingle = function(postId) {
 		return function() {
 			var deferred = $q.defer();
-			$http.get('/api/post/' + postId).then(function (response) {
+			$http.get('/api/post/' + postId).then(function(response) {
 				deferred.resolve(response.data)
 			});
 			return deferred.promise
 		}();
 	}
-	return {postsFunction: getPosts, catsFunction: getCats, singlePostFn: getSingle}
+	return {
+		postsFunction: getPosts,
+		catsFunction: getCats,
+		singlePostFn: getSingle
+	}
 });
 
-app.run(['$state',function($state) {
+app.run(['$state', function($state) {
 	$state.go('posts');
 }]);
 
-function log(msg){
+function log(msg) {
 	console.log(msg)
 }
 
