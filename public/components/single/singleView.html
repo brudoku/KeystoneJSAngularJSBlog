@@ -1,12 +1,10 @@
-
-
-	<div class="single-nav anim-zoom-out-full">
-		<a class="left-nav" href="#/{{prevNext.prevSlug}}/">{{prevNext.prevTitle}}</>
-		<a class="right-nav" href="#/{{prevNext.nextSlug}}/">{{prevNext.nextTitle}}</a>
+	<div class="single-nav">
+		<a class="left-nav anim-slide-right {{prevNext.prevCat}}" href="#/{{prevNext.prevSlug}}/"><span class="pull-left">&#60;&#60;{{prevNext.prevTitle}}</span></a>
+		<a class="right-nav anim-slide-left {{prevNext.nextCat}}" href="#/{{prevNext.nextSlug}}/"><span class="pull-right">{{prevNext.nextTitle}}&#62;&#62;</span></a>
 	</div>
-	<div class="panel anim-zoom-out">
-		<p ng-bind-html="content"></p>
-		<p ng-bind="customScript"></p>
+	<div class="single-content anim-zoom-out">
+		<h2 class="anim-slide-below {{category}}">{{title}}</h2>
+		<p  class="anim-slide-below-fade" ng-bind-html="content"></p>
 		<div ng-if="hasImage(image)">
 			<img ng-src="{{image}}" />
 		</div>

@@ -1,5 +1,5 @@
 <div class="post-list anim-slide-below-fade">
-	<div class="post {{post.catName}} repeat-animation" ng-repeat="post in posts">
-		<a href="#/{{post.slug}}/">{{post.title}}</a>
-	</div>
+	<a ng-repeat="post in posts" href="#/{{post.slug}}/">
+		<div class="post {{post.catName}}"><span>{{post.title}}</span></div>
+	</a>	
 </div>

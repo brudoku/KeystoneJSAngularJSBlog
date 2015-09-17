@@ -38,6 +38,9 @@ app.config(function($stateProvider, $urlRouterProvider) {
 				},
 				postData: function(PostsService) {
 					return PostsService.postsFunction();
+				},
+				categoryData: function(PostsService) {
+					return PostsService.catsFunction();
 				}
 			}
 		})
@@ -54,37 +57,47 @@ app.controller('PostViewCtrl', function($scope, postData, categoryData, $ocLazyL
 	});
 });
 
-app.controller('SingleViewCtrl', function($scope, postData, singlePost, $sce, $ocLazyLoad) {
-	var prevNext = _.each(postData.posts, function(post, index, postArray) {
+app.controller('SingleViewCtrl', function($scope, postData, singlePost, categoryData, $sce, $ocLazyLoad) {
+	var objPrevNext = {};
+	$scope.posts = _.map(postData.posts, function(post, index) {
+		var catName = _.filter(categoryData.postCategories, function(cat) {
+			return (post.categories[0] == cat._id)
+		})[0].key;
+		return _.extend(post, {
+			catName: catName
+		})
+	});
+
+	$scope.category = _.pluck(_.filter($scope.posts, function(post){return post._id == singlePost.post._id}), 'catName')[0];
+	
+	_.each($scope.posts, function(post, index, postArray) {
 		if (singlePost.post._id == post._id) {
-			var objPrevNext = {};
 			if(index-1 < 0){
 				objPrevNext.prevSlug = '';
 				objPrevNext.prevTitle = '';
+				objPrevNext.prevCat = '';
+
 			}else{
-				objPrevNext.prevSlug = index > 0 ? postArray[index - 1].slug : 'noneBefore';
-				objPrevNext.prevTitle = index > 0 ? postArray[index - 1].title : 'noneBefore';
+				objPrevNext.prevSlug = index > 0 ? postArray[index - 1].slug : '';
+				objPrevNext.prevTitle = index > 0 ? postArray[index - 1].title : '';
+				objPrevNext.prevCat = index > 0 ? postArray[index - 1].catName : '';
 			}
-			if(index+1 == postArray.length){
+			if(index+1 >= postArray.length){
 				objPrevNext.nextSlug = '';
 				objPrevNext.nextTitle = '';
+				objPrevNext.prevCat = '';
+
 			}else{
-				objPrevNext.nextSlug = index <= postArray.length ? postArray[index + 1].slug : 'noneAfter';
-				objPrevNext.nextTitle = index <= postArray.length ? postArray[index + 1].title : 'noneAfter';
+				objPrevNext.nextSlug = index <= postArray.length ? postArray[index + 1].slug : '';
+				objPrevNext.nextTitle = index <= postArray.length ? postArray[index + 1].title : '';
+				objPrevNext.nextCat = index <= postArray.length ? postArray[index + 1].catName : '';
 			}
-			$scope.prevNext = objPrevNext;
-			return
 		}
 	});
-	log(prevNext);
-
-	$scope.hasPrev = function(){
-
-	}
+	$scope.prevNext = objPrevNext;
+	$scope.title = $sce.trustAsHtml(singlePost.post.title);
 	$scope.content = $sce.trustAsHtml(singlePost.post.content.extended);
-	if (singlePost.post.image) {
-		$scope.image = singlePost.post.image.url;
-	}
+	$scope.image = singlePost.post.image ? singlePost.post.image.url : undefined;
 	$scope.scriptUpload = singlePost.post.scriptUpload;
 	if ($scope.scriptUpload) {
 		var filesToLoad = _.map($scope.scriptUpload, function(file) {
@@ -107,11 +120,6 @@ app.controller('CatCtrl', function($scope, $http, PostsService) {
 });
 
 app.controller('CatFilterCtrl', function($scope, postData, categoryData, $stateParams) {
-	log('CatFilterCtrl: ' + $stateParams.categoryId);
-	log(categoryData)
-	$scope.direction = function() {
-
-	}
 	$scope.posts = _.filter(_.map(postData.posts, function(post, index) {
 		var catName = _.filter(categoryData.postCategories, function(cat) {
 			return post.categories[0] == cat._id
@@ -167,30 +175,3 @@ app.run(['$state', function($state) {
 function log(msg) {
 	console.log(msg)
 }
-
-
-/*
-$rootScope.$on('$stateChangeStart', function (event, nextState, currentState) {
-    if (!isAuthenticated(nextState)) {
-        console.debug('Could not change route! Not authenticated!');
-        $rootScope.$broadcast('$stateChangeError');
-        event.preventDefault();
-        $state.go('login');
-    }
-});
-
-onEnter: ["$state",'PostsService', function (PostsService) {
-var foo = PostsService;
-
-log('enter')
-
-log(foo)
-}],
-onExit: ["$state",'PostsService', function (PostsService) {
-var foo = PostsService;
-log('exit')
-
-log(foo)
-}]
-
-*/
