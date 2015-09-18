@@ -77,7 +77,7 @@ app.controller('SingleViewCtrl', function($scope, postData, singlePost, category
 		return getOrElse(list, currentIndex + 1, defaultValue);
 	}
 	var PreviousItem = function(list, currentIndex, defaultValue) {
-		return getOrElse(list, currentIndex = 1, defaultValue);
+		return getOrElse(list, currentIndex	-1, defaultValue);
 	}
 	var getOrElse = function(list, index, defaultValue) {
 		return isOutOfRange(list, index) ? defaultValue : list[index];
