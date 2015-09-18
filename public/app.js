@@ -58,7 +58,6 @@ app.controller('PostViewCtrl', function($scope, postData, categoryData, $ocLazyL
 });
 
 app.controller('SingleViewCtrl', function($scope, postData, singlePost, categoryData, $sce, $ocLazyLoad) {
-	var objPrevNext = {};
 	$scope.posts = _.map(postData.posts, function(post, index) {
 		var catName = _.filter(categoryData.postCategories, function(cat) {
 			return (post.categories[0] == cat._id)
@@ -68,37 +67,47 @@ app.controller('SingleViewCtrl', function($scope, postData, singlePost, category
 		})
 	});
 
-	$scope.category = _.pluck(_.filter($scope.posts, function(post){return post._id == singlePost.post._id}), 'catName')[0];
-	
-	_.each($scope.posts, function(post, index, postArray) {
-		if (singlePost.post._id == post._id) {
-			if(index-1 < 0){
-				objPrevNext.prevSlug = '';
-				objPrevNext.prevTitle = '';
-				objPrevNext.prevCat = '';
+	$scope.category = _.pluck(_.filter($scope.posts, function(post) {
+		return post._id == singlePost.post._id
+	}), 'catName')[0];
 
-			}else{
-				objPrevNext.prevSlug = index > 0 ? postArray[index - 1].slug : '';
-				objPrevNext.prevTitle = index > 0 ? postArray[index - 1].title : '';
-				objPrevNext.prevCat = index > 0 ? postArray[index - 1].catName : '';
-			}
-			if(index+1 >= postArray.length){
-				objPrevNext.nextSlug = '';
-				objPrevNext.nextTitle = '';
-				objPrevNext.prevCat = '';
-
-			}else{
-				objPrevNext.nextSlug = index <= postArray.length ? postArray[index + 1].slug : '';
-				objPrevNext.nextTitle = index <= postArray.length ? postArray[index + 1].title : '';
-				objPrevNext.nextCat = index <= postArray.length ? postArray[index + 1].catName : '';
-			}
+	/*Get previous and next post title*/
+	$scope.prevNext = {};
+	var nextItem = function(list, currentIndex, defaultValue) {
+		return getOrElse(list, currentIndex + 1, defaultValue);
+	}
+	var PreviousItem = function(list, currentIndex, defaultValue) {
+		return getOrElse(list, currentIndex = 1, defaultValue);
+	}
+	var getOrElse = function(list, index, defaultValue) {
+		return isOutOfRange(list, index) ? defaultValue : list[index];
+	}
+	var isOutOfRange = function(list, index) {
+		return index < 0 || index >= list.length;
+	}
+	var emptyPost = function() {
+		return {
+			nextSlug: '',
+			nextTitle: '',
+			prevCat: ''
 		}
-	});
-	$scope.prevNext = objPrevNext;
+	}
+	var getProps = function(post) {
+		return {
+			title: post.title,
+			slug: post.slug,
+			cat: post.cat
+		}
+	}
+	var postId = _.indexOf(_.pluck($scope.posts, '_id'), singlePost.post._id);
+	$scope.prevNext.prev = getProps(PreviousItem($scope.posts, postId, emptyPost()));
+	$scope.prevNext.next = getProps(nextItem($scope.posts, postId, emptyPost()));
+	
 	$scope.title = $sce.trustAsHtml(singlePost.post.title);
 	$scope.content = $sce.trustAsHtml(singlePost.post.content.extended);
 	$scope.image = singlePost.post.image ? singlePost.post.image.url : undefined;
 	$scope.scriptUpload = singlePost.post.scriptUpload;
+
 	if ($scope.scriptUpload) {
 		var filesToLoad = _.map($scope.scriptUpload, function(file) {
 			return 'data/' + file.filename;
@@ -108,6 +117,7 @@ app.controller('SingleViewCtrl', function($scope, postData, singlePost, category
 			cache: false
 		}]);
 	}
+
 	$scope.hasImage = function(postImage) {
 		return (postImage == '' ? false : true)
 	}
