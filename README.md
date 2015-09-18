@@ -9,9 +9,3 @@ Features:
 
 Usage:
 	Copy contents into a new KeystoneJS installation folder and overwrite all files. This is currently designed to support one category per post, not multiple categories.
-
-
-Todo:
-	Caching of server calls
-	Responsiveness of post images
-	Refactoring of AngularJS services
