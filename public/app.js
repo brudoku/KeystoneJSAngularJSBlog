@@ -107,7 +107,15 @@ app.controller('SingleViewCtrl', function($scope, postData, singlePost, category
 	$scope.content = $sce.trustAsHtml(singlePost.post.content.extended);
 	$scope.image = singlePost.post.image ? singlePost.post.image.url : undefined;
 	$scope.scriptUpload = singlePost.post.scriptUpload;
+	// $scope.template = singlePost.post.contentTemplates || 'no template';
+	$scope.template = $sce.trustAsHtml(singlePost.post.templates);
+	log($scope.template);
 
+	$scope.usesTemplates = function() {
+		// return ($scope.template == 'no template' ? false : true)
+		log('called usesTemplates')
+		return true
+	}
 	if ($scope.scriptUpload) {
 		var filesToLoad = _.map($scope.scriptUpload, function(file) {
 			return 'data/' + file.filename;

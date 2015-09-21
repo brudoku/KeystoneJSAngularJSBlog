@@ -17,19 +17,19 @@ Post.add({
 	publishedDate: { type: Types.Date, index: true, dependsOn: { state: 'published' } },
 	image: { type: Types.CloudinaryImage },
 	content: {
-		brief: { type: Types.Html, wysiwyg: true, height: 150 },
-		extended: { type: Types.Html, wysiwyg: true, height: 400 }
+		brief: { type: Types.Html, wysiwyg: true, height: 50 },
+		extended: { type: Types.Html, wysiwyg: true, height: 300 },
 	},
 	categories: { type: Types.Relationship, ref: 'PostCategory', many: true },
-	customScript: { type: String },
 	scriptUpload: {
 		type: Types.LocalFiles,
 		dest: 'public/data',
 		// prefix: '/data',
 		filename: function(item, file){
 			return item.id + '.' + file.extension
-		}	
-	}
+		},
+	},
+	templates: { type: String, wysiwyg: false, height: 300 }
 });
 
 Post.schema.virtual('content.full').get(function() {
