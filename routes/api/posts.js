@@ -30,9 +30,7 @@ exports.getPostTitles = function(req, res) {
 					}
 				})
 
-		res.apiResponse({
-			posts: posts
-		});
+		res.apiResponse(posts);
 	});
 }
 
@@ -43,9 +41,7 @@ exports.get = function(req, res) {
 	Post.model.findById(req.params.id).exec(function(err, item) {
 		if (err) return res.apiError('database error', err);
 		if (!item) return res.apiError('not found');
-		res.apiResponse({
-			post: item
-		});
+		res.apiResponse(item);
 	});
 }
 
