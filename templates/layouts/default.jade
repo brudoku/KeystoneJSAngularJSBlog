@@ -22,13 +22,12 @@ html
 				div(ng-controller="CatCtrl")
 					div.panel.category-list
 						li(ng-repeat="cat in categories")
-							a(href="#/category/{{cat.name}}" ng-class="cat.name")
-								{{cat.name}}
+							a(href="#/category/{{cat}}" ng-class="cat")
+								{{cat}}
 				<div ui-view class="container no-padding no-margin anim-in-out anim-fade animated" data-anim-speed="800" data-anim-sync="true" ></div>
 		.container: #footer
 		script(src='/assets/js/jquery/jquery-1.11.2.min.js')
 		script(src='/assets/js/bootstrap/bootstrap-3.3.4.min.js')
-		script(src='/assets/js/libs/handlebars.js')
 		script(src='/assets/js/angular/angular.js')
 		script(src='/assets/js/angular/angular-ui-router.js')
 		script(src='/assets/js/angular/angular-animate.js')

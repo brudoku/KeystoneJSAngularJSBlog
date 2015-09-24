@@ -7,24 +7,27 @@ app.config(function($stateProvider, $urlRouterProvider) {
 			templateUrl: '/components/home/homeView.html',
 			controller: 'PostViewCtrl',
 			resolve: {
-				postData: function(PostsService) {
-					return PostsService.postsFunction();
+				categoryData: function(PostsAPI) {
+					return PostsAPI.catsFn();
 				},
-				categoryData: function(PostsService) {
-					return PostsService.catsFunction();
+				postTitleData: function(PostFactory){
+					return PostFactory.postCatFn();
 				}
 			}
 		})
 		.state('categories', {
 			url: "/category/:categoryId",
-			templateUrl: '/components/home/filterView.html',
+			templateUrl: '/components/home/homeView.html',
 			controller: 'CatFilterCtrl',
 			resolve: {
-				postData: function(PostsService) {
-					return PostsService.postsFunction();
+				postData: function(PostsAPI) {
+					return PostsAPI.postsFn();
 				},
-				categoryData: function(PostsService) {
-					return PostsService.catsFunction();
+				postTitleData: function(PostsAPI) {
+					return PostsAPI.postTitlesFn();
+				},
+				categoryData: function(PostsAPI) {
+					return PostsAPI.catsFn();
 				}
 			}
 		})
@@ -33,33 +36,30 @@ app.config(function($stateProvider, $urlRouterProvider) {
 			templateUrl: '/components/single/singleView.html',
 			controller: 'SingleViewCtrl',
 			resolve: {
-				singlePost: function(PostsService, $stateParams) {
-					return PostsService.singlePostFn($stateParams.slug);
+				// singlePost: function(PostsAPI, $stateParams) {
+				// 	return PostsAPI.singlePostFn($stateParams.slug);
+				// },
+				singlePost2: function(PostFactory, $stateParams) {
+					return PostFactory.singlePostFn2($stateParams.slug);
+				},				
+				postData: function(PostsAPI) {
+					return PostsAPI.postsFn();
 				},
-				postData: function(PostsService) {
-					return PostsService.postsFunction();
-				},
-				categoryData: function(PostsService) {
-					return PostsService.catsFunction();
+				categoryData: function(PostsAPI) {
+					return PostsAPI.catsFn();
 				}
 			}
 		})
 });
 
-app.controller('PostViewCtrl', function($scope, postData, categoryData, $ocLazyLoad) {
-	$scope.posts = _.map(postData.posts, function(post, index) {
-		var catName = _.filter(categoryData.postCategories, function(cat) {
-			return (post.categories[0] == cat._id)
-		})[0].key;
-		return _.extend(post, {
-			catName: catName
-		})
-	});
+app.controller('PostViewCtrl', function($scope, postTitleData) {
+	$scope.posts  = postTitleData;
 });
 
-app.controller('SingleViewCtrl', function($scope, postData, singlePost, categoryData, $sce, $ocLazyLoad) {
+app.controller('SingleViewCtrl', function($scope, postData, singlePost2, categoryData, $sce, $ocLazyLoad) {
+// log(singlePost2.post)
 	$scope.posts = _.map(postData.posts, function(post, index) {
-		var catName = _.filter(categoryData.postCategories, function(cat) {
+		var catName = _.filter(categoryData, function(cat) {
 			return (post.categories[0] == cat._id)
 		})[0].key;
 		return _.extend(post, {
@@ -68,7 +68,7 @@ app.controller('SingleViewCtrl', function($scope, postData, singlePost, category
 	});
 
 	$scope.category = _.pluck(_.filter($scope.posts, function(post) {
-		return post._id == singlePost.post._id
+		return post._id == singlePost2._id
 	}), 'catName')[0];
 
 	/*Get previous and next post title*/
@@ -102,18 +102,15 @@ app.controller('SingleViewCtrl', function($scope, postData, singlePost, category
 	var postId = _.indexOf(_.pluck($scope.posts, '_id'), singlePost.post._id);
 	$scope.prevNext.prev = getProps(PreviousItem($scope.posts, postId, emptyPost()));
 	$scope.prevNext.next = getProps(nextItem($scope.posts, postId, emptyPost()));
-	
+
 	$scope.title = $sce.trustAsHtml(singlePost.post.title);
 	$scope.content = $sce.trustAsHtml(singlePost.post.content.extended);
 	$scope.image = singlePost.post.image ? singlePost.post.image.url : undefined;
 	$scope.scriptUpload = singlePost.post.scriptUpload;
 	// $scope.template = singlePost.post.contentTemplates || 'no template';
 	$scope.template = $sce.trustAsHtml(singlePost.post.templates);
-	log($scope.template);
 
 	$scope.usesTemplates = function() {
-		// return ($scope.template == 'no template' ? false : true)
-		log('called usesTemplates')
 		return true
 	}
 	if ($scope.scriptUpload) {
@@ -131,16 +128,16 @@ app.controller('SingleViewCtrl', function($scope, postData, singlePost, category
 	}
 });
 
-app.controller('CatCtrl', function($scope, $http, PostsService) {
-	PostsService.catsFunction().then(function(res) {
-		$scope.categories = res.postCategories;
+app.controller('CatCtrl', function($scope, $http, PostsAPI) {
+	PostsAPI.catsFn().then(function(res) {
+		$scope.categories = _.pluck(res, 'name');//['code', 'music', ...]
 	});
 });
 
-app.controller('CatFilterCtrl', function($scope, postData, categoryData, $stateParams) {
-	$scope.posts = _.filter(_.map(postData.posts, function(post, index) {
-		var catName = _.filter(categoryData.postCategories, function(cat) {
-			return post.categories[0] == cat._id
+app.controller('CatFilterCtrl', function($scope, postData, postTitleData, categoryData, $stateParams) {
+	$scope.posts = _.filter(_.map(postTitleData.posts, function(post, index) {
+		var catName = _.filter(categoryData, function(cat) {
+			return post.category == cat._id
 		})[0].key;
 		return _.extend(post, {
 			catName: catName
@@ -150,11 +147,54 @@ app.controller('CatFilterCtrl', function($scope, postData, categoryData, $stateP
 	});
 });
 
-app.service('PostsService', function($http, $q, $timeout) {
+app.service('PostFactory', function(PostsAPI, $q) {
+	var postsAndCats = function(){
+		return function(){
+			var deferred = $q.defer();
+			PostsAPI.postTitlesFn()
+				.then(function(postData){
+					return postData
+				})
+				.then(function(postData){
+					PostsAPI.catsFn().then(function(categoryData){
+						var postsCats = _.filter(_.map(postData.posts, function(post, index) {
+							var catName = _.filter(categoryData, function(cat) {
+								return post.category == cat._id})[0].key;
+							post.category = catName;
+							return post;
+						}));
+						deferred.resolve(postsCats);
+					})
+				})
+			return deferred.promise;
+		}()
+	}
+	var singlePost = function(postId){
+		return function(){
+			var deferred = $q.defer();
+			PostsAPI.singlePostFn(postId)
+				.then(function(singlePost){
+					PostsAPI.catsFn().then(function(categories){
+						var postCat =  _.find(categories, function(cat){
+							return singlePost.categories[0] == cat._id;
+						})
+						singlePost.categories = postCat.key;
+						deferred.resolve(singlePost);
+					})
+				})
+		}();
+	}
+	return {postCatFn: postsAndCats,
+			singlePostFn2: singlePost}
+})
+
+app.service('PostsAPI', function($http, $q, $timeout, $cacheFactory) {
 	var getPosts = function() {
 		return function() {
 			var deferred = $q.defer();
-			$http.get('/api/post/list').then(function(response) {
+			$http({url:'/api/post/list',
+				cache: true
+			}).then(function(response) {
 				deferred.resolve(response.data)
 			});
 			return deferred.promise;
@@ -168,7 +208,6 @@ app.service('PostsService', function($http, $q, $timeout) {
 			});
 			return deferred.promise;
 		}();
-
 	}
 	var getSingle = function(postId) {
 		return function() {
@@ -179,10 +218,20 @@ app.service('PostsService', function($http, $q, $timeout) {
 			return deferred.promise
 		}();
 	}
+	var getPostTitles = function() {
+		return function() {
+			var deferred = $q.defer();
+			$http.get('/api/post/getPostTitles').then(function(response) {
+				deferred.resolve(response.data)
+			});
+			return deferred.promise
+		}();
+	}
 	return {
-		postsFunction: getPosts,
-		catsFunction: getCats,
-		singlePostFn: getSingle
+		postsFn: getPosts,
+		catsFn: getCats,
+		singlePostFn: getSingle,
+		postTitlesFn: getPostTitles
 	}
 });
 

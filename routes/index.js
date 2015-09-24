@@ -44,6 +44,8 @@ exports = module.exports = function(app) {
 	// app.get('/protected', middleware.requireUser, routes.views.protected);
 
 	app.get('/api/post/list', keystone.middleware.api, routes.api.posts.list);
+	app.get('/api/post/getPostTitles', keystone.middleware.api, routes.api.posts.getPostTitles);
+	
 	app.get('/api/post/:slug', keystone.middleware.api, routes.api.posts.getBySlug);
 	app.get('/api/getCategories', keystone.middleware.api, routes.api.posts.getCategories);
 };
