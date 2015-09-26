@@ -49,7 +49,6 @@ app.controller('SingleViewCtrl', function($scope, postTitlesCats, singlePost, $s
 	$scope.template = $sce.trustAsHtml(singlePost.templates);
 	$scope.prev = Utility.getItem().getPrev(postTitlesCats, postId);
 	$scope.next = Utility.getItem().getNext(postTitlesCats, postId);
-
 	$scope.scriptUpload = singlePost.scriptUpload;
 	if ($scope.scriptUpload) {
 		var filesToLoad = _.map($scope.scriptUpload, function(file) {
@@ -78,6 +77,7 @@ app.controller('CategoryViewCtrl', function($scope, postTitlesCats, $stateParams
 });
 
 app.service('PostsFactory', function(PostsAPI, $q, PostsCache) {
+
 	var getPostTitlesAndCat = function(){
 		return function(){
 			if(PostsCache.get('postTitlesCatCache')){
@@ -86,9 +86,6 @@ app.service('PostsFactory', function(PostsAPI, $q, PostsCache) {
 				var cache = PostsCache;
 				var deferred = $q.defer();
 				PostsAPI.postTitlesFn()
-					.then(function(postData){
-						return postData
-					})
 					.then(function(postData){
 						PostsAPI.catsFn().then(function(categoryData){
 							var postsCats = _.filter(_.map(postData, function(post, index) {
@@ -103,7 +100,6 @@ app.service('PostsFactory', function(PostsAPI, $q, PostsCache) {
 					})
 				return deferred.promise;
 			}
-
 		}()
 	}
 	var getSinglePost = function(postId){
@@ -138,50 +134,56 @@ app.factory('PostsCache', function($cacheFactory){
 	return $cacheFactory('cachedPosts')
 })
 app.service('PostsAPI', function($http, $q, PostsCache) {
-	var getPosts = function() {
-		return function() {
-			var deferred = $q.defer();
-			$http({url:'/api/post/list',
-				cache: true
-			}).then(function(response) {
-				deferred.resolve(response.data)
-			});
-			return deferred.promise;
-		}();
-	}
+
 	var getCats = function() {
 		return function() {
-
-			if(PostsCache.get('catsCache')){
-				return 
-			}
 			var deferred = $q.defer();
-			$http.get('/api/getCategories').then(function(response) {
-				deferred.resolve(response.data)
-			});
+			var cache = PostsCache.get('catsCache');
+			if(cache){
+				deferred.resolve(cache);
+			} else {
+				var cache = PostsCache;
+				$http.get('/api/getCategories').then(function(response) {
+					cache.put('catsCache', response.data);
+					deferred.resolve(response.data);
+				});
+			}
 			return deferred.promise;
 		}();
 	}
 	var getSingle = function(postId) {
-		return function() {
+		return function(){
 			var deferred = $q.defer();
-			$http.get('/api/post/' + postId).then(function(response) {
-				deferred.resolve(response.data)
-			});
-			return deferred.promise
+			var cache = PostsCache.get('singlePostCache-'+postId);
+			if(cache && cache.slug == postId){
+				deferred.resolve(cache)
+			}else{
+				var cache = PostsCache;
+				$http.get('/api/post/' + postId).then(function(response) {
+					cache.put('singlePostCache-'+postId, response.data);
+					deferred.resolve(response.data)
+				});
+			}
+			return deferred.promise;
 		}();
 	}
 	var getPostTitles = function() {
 		return function() {
 			var deferred = $q.defer();
-			$http.get('/api/post/getPostTitles').then(function(response) {
-				deferred.resolve(response.data)
-			});
-			return deferred.promise
+			var cache = PostsCache.get('postTitlesCatCache');
+			if(cache){
+				deferred.resolve(cache);
+			} else {
+				var cache = PostsCache;
+				$http.get('/api/post/getPostTitles').then(function(response) {
+					cache.put('postTitlesCatCache', response.data);
+					deferred.resolve(response.data);
+				});
+			}
+			return deferred.promise;
 		}();
 	}
 	return {
-		postsFn: getPosts,
 		catsFn: getCats,
 		singlePostFn: getSingle,
 		postTitlesFn: getPostTitles
@@ -228,7 +230,7 @@ app.service('Utility', function(){
 });
 
 app.run(['$state', function($state) {
-	// $state.go('posts');
+	$state.go('posts');
 }]);
 
 function log(msg) {
