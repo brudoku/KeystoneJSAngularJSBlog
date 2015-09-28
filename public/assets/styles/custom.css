@@ -44,19 +44,19 @@ body{
 		text-shadow: 0px 2px 0px #aaa;
 	}
 	.post-list .code{
-		background: #000;
+		background: #f29602;
+	}
+	.post-list .music{
+		background: #265f42;
+	}
+	.post-list .other{
+		background: #0202e5;
 	}
 	.code a{
 		color: #fff;
 	}
-	.post-list .music{
-		background: #000;
-	}
 	.music a{
 		color: #fff;
-	}
-	.post-list .other{
-		background: #000;
 	}
 	.other a{
 		color: #fff;

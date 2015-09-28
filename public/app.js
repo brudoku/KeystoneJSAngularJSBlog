@@ -62,6 +62,7 @@ app.controller('SingleViewCtrl', function($scope, postTitlesCats, singlePost, $s
 	$scope.hasImage = function(postImage) {
 		return (postImage == undefined ? false : true)
 	}
+
 });
 
 app.controller('CatCtrl', function($scope, $http, PostsFactory) {
@@ -77,7 +78,6 @@ app.controller('CategoryViewCtrl', function($scope, postTitlesCats, $stateParams
 });
 
 app.service('PostsFactory', function(PostsAPI, $q, PostsCache) {
-
 	var getPostTitlesAndCat = function(){
 		return function(){
 			if(PostsCache.get('postTitlesCatCache')){
@@ -100,7 +100,7 @@ app.service('PostsFactory', function(PostsAPI, $q, PostsCache) {
 					})
 				return deferred.promise;
 			}
-		}()
+		}();
 	}
 	var getSinglePost = function(postId){
 		return function(){
@@ -127,14 +127,13 @@ app.service('PostsFactory', function(PostsAPI, $q, PostsCache) {
 	}
 	return {postCatFn: getPostTitlesAndCat,
 			singlePostFn: getSinglePost}
-})
-
+});
 
 app.factory('PostsCache', function($cacheFactory){
 	return $cacheFactory('cachedPosts')
-})
-app.service('PostsAPI', function($http, $q, PostsCache) {
+});
 
+app.service('PostsAPI', function($http, $q, PostsCache) {
 	var getCats = function() {
 		return function() {
 			var deferred = $q.defer();
@@ -233,6 +232,4 @@ app.run(['$state', function($state) {
 	$state.go('posts');
 }]);
 
-function log(msg) {
-	console.log(msg)
-}
+function log(msg) {	console.log(msg)}
