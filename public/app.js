@@ -1,4 +1,6 @@
-var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate', 'anim-in-out']);
+// var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate', 'anim-in-out']);
+var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate']);
+// var app = angular.module('app', ['ui.router', 'oc.lazyLoad']);
 
 app.config(function($stateProvider, $urlRouterProvider) {
 	$stateProvider
@@ -6,16 +8,6 @@ app.config(function($stateProvider, $urlRouterProvider) {
 			url: "/",
 			templateUrl: '/components/home/homeView.html',
 			controller: 'PostViewCtrl',
-			resolve: {
-				postTitlesCats: function(PostsFactory){
-					return PostsFactory.postCatFn();
-				}
-			}
-		})
-		.state('categories', {
-			url: "/category/:categoryId",
-			templateUrl: '/components/home/homeView.html',
-			controller: 'CategoryViewCtrl',
 			resolve: {
 				postTitlesCats: function(PostsFactory){
 					return PostsFactory.postCatFn();
@@ -37,8 +29,32 @@ app.config(function($stateProvider, $urlRouterProvider) {
 		})
 });
 
-app.controller('PostViewCtrl', function($scope, postTitlesCats) {
-	$scope.posts = postTitlesCats;
+app.controller('PostViewCtrl', function($scope, $stateParams, postTitlesCats) {
+
+	$scope.categories = _.uniq(_.pluck(postTitlesCats,'category'));
+	var catParam = $stateParams.categoryId ? $stateParams.categoryId.toLowerCase() : null;
+	$scope.posts = _.map(postTitlesCats, function(post){
+		if(!catParam){
+			return post;
+		} else {
+			post.category == catParam ? post.isCategorySelected = true : post.isCategorySelected = false;
+			return post;
+		}
+	});
+
+	$scope.filterCat = function(cId){
+		if(!cId) {
+			$scope.posts = _.map($scope.posts, function(post){
+				post.isCategorySelected = true;
+				return post;
+			});
+		}else{
+			$scope.posts = _.map($scope.posts, function(post){
+				post.category == cId ? post.isCategorySelected = true : post.isCategorySelected = false;
+				return post;
+			});
+		}
+	}
 });
 
 app.controller('SingleViewCtrl', function($scope, postTitlesCats, singlePost, $sce, $ocLazyLoad, Utility) {
@@ -65,72 +81,46 @@ app.controller('SingleViewCtrl', function($scope, postTitlesCats, singlePost, $s
 
 });
 
-app.controller('CatCtrl', function($scope, $http, PostsFactory) {
-	PostsFactory.postCatFn().then(function(postTitlesCats) {
-		$scope.categories = _.uniq(_.pluck(postTitlesCats,'category'));
-	});
-});
-
-app.controller('CategoryViewCtrl', function($scope, postTitlesCats, $stateParams) {
-	$scope.posts = _.filter(postTitlesCats, function(elem) {
-		return elem.category == $stateParams.categoryId.toLowerCase();
-	});
+app.factory('PostsCache', function($cacheFactory){
+	return $cacheFactory('cachedPosts')
 });
 
 app.service('PostsFactory', function(PostsAPI, $q, PostsCache) {
 	var getPostTitlesAndCat = function(){
 		return function(){
-			if(PostsCache.get('postTitlesCatCache')){
-				return PostsCache.get('postTitlesCatCache')
-			}else{
-				var cache = PostsCache;
-				var deferred = $q.defer();
-				PostsAPI.postTitlesFn()
-					.then(function(postData){
-						PostsAPI.catsFn().then(function(categoryData){
-							var postsCats = _.filter(_.map(postData, function(post, index) {
-								var catName = _.filter(categoryData, function(cat) {
-									return post.category == cat._id})[0].key;
-								post.category = catName;
-								return post;
-							}));
-							cache.put('postTitlesCatCache',postsCats);
-							deferred.resolve(postsCats);
-						})
-					})
-				return deferred.promise;
-			}
+			var deferred = $q.defer();
+			PostsAPI.postTitlesFn().then(function(postData){
+				PostsAPI.catsFn().then(function(categoryData){
+					var postsCats = _.map(postData, function(post, index) {
+						var catName = _.filter(categoryData, function(cat) {
+							return post.category == cat._id})[0].key;
+							var clone = _.clone(post);
+						return _.extend(clone, {isCategorySelected: true, category: catName});
+
+					});
+					deferred.resolve(postsCats);
+				});
+			});
+			return deferred.promise;
 		}();
 	}
 	var getSinglePost = function(postId){
 		return function(){
-			var singlePostCache = PostsCache.get('singlePostCache-'+postId)
-			if(singlePostCache && singlePostCache.slug == postId){
-				return PostsCache.get('singlePostCache-'+postId)
-			}else{
-				var cache = PostsCache;
 				var deferred = $q.defer();
 				PostsAPI.singlePostFn(postId)
 					.then(function(singlePost){
 						PostsAPI.catsFn().then(function(categories){
 							var postCat =  _.find(categories, function(cat){
 								return singlePost.categories[0] == cat._id;
-							})
-							singlePost.categories = postCat.key;
-							cache.put('singlePostCache-'+postId, singlePost);
+							});
 							deferred.resolve(singlePost);
 						})
 					})
 				return deferred.promise;
-			}
 		}();
 	}
 	return {postCatFn: getPostTitlesAndCat,
 			singlePostFn: getSinglePost}
-});
-
-app.factory('PostsCache', function($cacheFactory){
-	return $cacheFactory('cachedPosts')
 });
 
 app.service('PostsAPI', function($http, $q, PostsCache) {
@@ -169,13 +159,13 @@ app.service('PostsAPI', function($http, $q, PostsCache) {
 	var getPostTitles = function() {
 		return function() {
 			var deferred = $q.defer();
-			var cache = PostsCache.get('postTitlesCatCache');
+			var cache = PostsCache.get('postTitlesCache');
 			if(cache){
 				deferred.resolve(cache);
 			} else {
 				var cache = PostsCache;
 				$http.get('/api/post/getPostTitles').then(function(response) {
-					cache.put('postTitlesCatCache', response.data);
+					cache.put('postTitlesCache', response.data);
 					deferred.resolve(response.data);
 				});
 			}
