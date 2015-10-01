@@ -30,18 +30,13 @@ app.config(function($stateProvider, $urlRouterProvider) {
 });
 
 app.controller('PostViewCtrl', function($scope, $stateParams, postTitlesCats) {
-
+	$scope.posts = postTitlesCats;
 	$scope.categories = _.uniq(_.pluck(postTitlesCats,'category'));
-	var catParam = $stateParams.categoryId ? $stateParams.categoryId.toLowerCase() : null;
-	$scope.posts = _.map(postTitlesCats, function(post){
-		if(!catParam){
-			return post;
-		} else {
-			post.category == catParam ? post.isCategorySelected = true : post.isCategorySelected = false;
-			return post;
-		}
-	});
-
+	// var catParam = $stateParams.categoryId ? $stateParams.categoryId.toLowerCase() : null;
+	// $scope.posts = _.map(postTitlesCats, function(post){
+	// post.category == catParam ? post.isCategorySelected = true : post.isCategorySelected = false;
+	// return post;
+	// });
 	$scope.filterCat = function(cId){
 		if(!cId) {
 			$scope.posts = _.map($scope.posts, function(post){

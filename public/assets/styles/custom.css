@@ -109,7 +109,7 @@ body{
 	.category-list li a{
 		padding: 0px 5px 0px 5px;
 		font-size: 22px;
-	    color: #fff;
+	    /*color: #fff;*/
 	}
 	@media (min-width : 200px) and (max-width : 480px) {
 		.category-list li a {
@@ -151,14 +151,14 @@ body{
 		transition: 300ms;
 	}
 @media (min-width : 200px) and (max-width : 560px) {
-	a.left-nav, a.right-nav{	
+	a.left-nav, a.right-nav{
 		width: 49%;
 	}
 }
 @media (min-width : 561px) and (max-width : 699px) {
-	a.left-nav, a.right-nav{	
+	a.left-nav, a.right-nav{
 		width: 39%;
-	}	
+	}
 }
 	a.left-nav:hover, a.right-nav:hover{
 		opacity: 1;
@@ -181,12 +181,15 @@ body{
 	}
 }
 /*ANIM*/
-	.anim-in, .anim-out, .ng-animate{
+.ng-animate{
+	/*position:absolute;*/
+}
+/*	.anim-in, .anim-out, .ng-animate{
 		position:absolute;
 	}
 	.anim-out-setup{
 		position:absolute
-	}
+	}*/
 
 /*MIXINS*/
 	.no-margin{
@@ -206,19 +209,44 @@ body{
 @media (min-width : 481px) and (max-width : 560px) {
 	.container{
 		width: 460px;
-		padding: 0px;		
+		padding: 0px;
 	}
 }
 @media (min-width : 561px) and (max-width : 699px) {
 	.container{
 		width: 540px;
-		padding: 0px;		
+		padding: 0px;
 	}
 }
 
 @media (min-width : 700px) and (max-width : 767px) {
 	.container{
 		width: 680px;
-		padding: 0px;		
+		padding: 0px;
 	}
+}
+
+.effeckt-list[data-effeckt-type='pop-in'] .new-item a{
+}
+
+.effeckt-list[data-effeckt-type='pop-in'] .remove-item{
+}
+.effeckt-list[data-effeckt-type='pop-in'] .remove-item a{
+/*	margin:0px;*/
+}
+
+.mofo.ng-enter {
+    -webkit-transition:all linear 1s;
+    transition:all linear 1s;
+    opacity: 0;
+	line-height: 0;
+}
+
+.mofo.ng-enter-stagger {
+	transition-delay: 0.1s;
+}
+
+.mofo.ng-enter.ng-enter-active{
+	opacity: 1;
+	line-height: 30px;
 }
