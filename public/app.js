@@ -14,6 +14,16 @@ app.config(function($stateProvider, $urlRouterProvider) {
 				}
 			}
 		})
+		.state('category',{
+			url: "/category/:catName",
+			templateUrl: '/components/home/homeView.html',
+			controller: 'PostViewCtrl',
+			resolve: {
+				postTitlesCats: function(PostsFactory){
+					return PostsFactory.postCatFn();
+				}
+			}
+		})
 		.state('single', {
 			url: "/:slug/",
 			templateUrl: '/components/single/singleView.html',
@@ -30,25 +40,26 @@ app.config(function($stateProvider, $urlRouterProvider) {
 });
 
 app.controller('PostViewCtrl', function($scope, $stateParams, postTitlesCats) {
-	$scope.posts = postTitlesCats;
+		log('PostViewCtrl')
+
 	$scope.categories = _.uniq(_.pluck(postTitlesCats,'category'));
-	// var catParam = $stateParams.categoryId ? $stateParams.categoryId.toLowerCase() : null;
-	// $scope.posts = _.map(postTitlesCats, function(post){
-	// post.category == catParam ? post.isCategorySelected = true : post.isCategorySelected = false;
-	// return post;
-	// });
+	var catParam = $stateParams.catName ? $stateParams.catName.toLowerCase() : null;
+	if(catParam){
+		log('catParam')
+		log(catParam)
+
+		$scope.posts = _.map(postTitlesCats, function(post){
+			post.category == catParam ? post.isCategorySelected = true : post.isCategorySelected = false;
+			return post;
+		});
+	}else{
+		$scope.posts = postTitlesCats;
+	}
 	$scope.filterCat = function(cId){
-		if(!cId) {
-			$scope.posts = _.map($scope.posts, function(post){
-				post.isCategorySelected = true;
-				return post;
-			});
-		}else{
-			$scope.posts = _.map($scope.posts, function(post){
-				post.category == cId ? post.isCategorySelected = true : post.isCategorySelected = false;
-				return post;
-			});
-		}
+		$scope.posts = _.map($scope.posts, function(post){
+			post.category == cId ? post.isCategorySelected = true : post.isCategorySelected = false;
+			return post;
+		});
 	}
 });
 
@@ -73,7 +84,6 @@ app.controller('SingleViewCtrl', function($scope, postTitlesCats, singlePost, $s
 	$scope.hasImage = function(postImage) {
 		return (postImage == undefined ? false : true)
 	}
-
 });
 
 app.factory('PostsCache', function($cacheFactory){
