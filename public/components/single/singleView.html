@@ -1,16 +1,11 @@
-<a href='/#/' class="logo" ng-click="filterCat()">Nybryx</a>
-<div class="panel category-list">
-	<li ng-repeat="cat in categories">
-		<a href="#/category/{{cat}}" ng-class="{{cat}}" ng-click="filterCat(cat)")>{{cat}}</a>
-	</li>
-</div>
+<h1>Single</h1>
 <div class="single-nav">
-	<a class="left-nav anim-slide-right {{prev.cat}}" href="#/{{prev.slug}}/"><span class="pull-left">&#60;&#60;{{prev.title}}</span></a>
-	<a class="right-nav anim-slide-left {{next.cat}}" href="#/{{next.slug}}/"><span class="pull-right">{{next.title}}&#62;&#62;</span></a>
+	<a class="left-nav  {{prev.cat}}" href="#/{{prev.slug}}/"><span class="pull-left">&#60;&#60;{{prev.title}}</span></a>
+	<a class="right-nav  {{next.cat}}" href="#/{{next.slug}}/"><span class="pull-right">{{next.title}}&#62;&#62;</span></a>
 </div>
-<div class="single-content anim-zoom-out">
-	<h2 class="anim-slide-below {{category}}">{{title}}</h2>
-	<p  class="anim-slide-below-fade" ng-bind-html="content"></p>
+<div class="single-content ">
+	<h2 class=" {{category}}">{{title}}</h2>
+	<p ng-bind-html="content"></p>
 	<div ng-if="hasImage(image)">
 		<img ng-src="{{image}}" />
 	</div>

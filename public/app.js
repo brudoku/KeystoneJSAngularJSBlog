@@ -2,28 +2,49 @@
 var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate']);
 // var app = angular.module('app', ['ui.router', 'oc.lazyLoad']);
 
-app.config(function($stateProvider, $urlRouterProvider) {
+app.config(function config($stateProvider, $urlRouterProvider) {
 	$stateProvider
-		.state('posts', {
-			url: "/",
-			templateUrl: '/components/home/homeView.html',
-			controller: 'PostViewCtrl',
+		.state('topView',{
+			abstract: true,
+			url: '',
+			templateUrl: '/components/home/main.html'
+		})
+		.state('topView.posts',{
+			url: '/',
+			views: {
+				'categories':{
+					templateUrl: '/components/home/categories.html',
+					controller: 'CatCtrl'
+				},
+				'posts':{
+					templateUrl: '/components/home/posts.html',
+					controller: 'PostViewCtrl'
+				}
+			},
 			resolve: {
-				postTitlesCats: function(PostsFactory){
+				postTitlesCats: function(PostsFactory) {
 					return PostsFactory.postCatFn();
 				}
 			}
 		})
-		.state('category',{
-			url: "/category/:catName",
-			templateUrl: '/components/home/homeView.html',
-			controller: 'PostViewCtrl',
+		.state('topView.category',{
+			url: '/category/:catName',
+			views: {
+				'categories':{
+					templateUrl: '/components/home/categories.html',
+					controller: 'CatCtrl'
+				},
+				'posts':{
+					templateUrl: '/components/home/posts.html',
+					controller: 'PostViewCtrl'
+				}
+			},
 			resolve: {
-				postTitlesCats: function(PostsFactory){
+				postTitlesCats: function(PostsFactory) {
 					return PostsFactory.postCatFn();
 				}
 			}
-		})
+		})		
 		.state('single', {
 			url: "/:slug/",
 			templateUrl: '/components/single/singleView.html',
@@ -39,28 +60,31 @@ app.config(function($stateProvider, $urlRouterProvider) {
 		})
 });
 
-app.controller('PostViewCtrl', function($scope, $stateParams, postTitlesCats) {
-		log('PostViewCtrl')
+app.controller('CatCtrl', function($scope, $stateParams, postTitlesCats) {
+	$scope.currentCat = $stateParams.catName ? $stateParams.catName : 'index';
+	$scope.posts = postTitlesCats;
+	$scope.categories = _.uniq(_.pluck(postTitlesCats,'category'));
 
+});
+
+app.controller('PostViewCtrl', function($scope, $stateParams, postTitlesCats) {
+	$scope.currentCat = $stateParams.catName ? $stateParams.catName : 'index';
 	$scope.categories = _.uniq(_.pluck(postTitlesCats,'category'));
 	var catParam = $stateParams.catName ? $stateParams.catName.toLowerCase() : null;
-	if(catParam){
-		log('catParam')
-		log(catParam)
-
+	if(!catParam){
+		$scope.posts = postTitlesCats;
+	}else{
 		$scope.posts = _.map(postTitlesCats, function(post){
 			post.category == catParam ? post.isCategorySelected = true : post.isCategorySelected = false;
 			return post;
 		});
-	}else{
-		$scope.posts = postTitlesCats;
 	}
-	$scope.filterCat = function(cId){
-		$scope.posts = _.map($scope.posts, function(post){
-			post.category == cId ? post.isCategorySelected = true : post.isCategorySelected = false;
-			return post;
-		});
-	}
+		setTimeout(function(){
+			$scope.$apply(function(){
+
+				$scope.categories.pop();
+			})
+	},1000)
 });
 
 app.controller('SingleViewCtrl', function($scope, postTitlesCats, singlePost, $sce, $ocLazyLoad, Utility) {
@@ -224,7 +248,7 @@ app.service('Utility', function(){
 });
 
 app.run(['$state', function($state) {
-	$state.go('posts');
+	$state.go('topView.posts');
 }]);
 
 function log(msg) {	console.log(msg)}
