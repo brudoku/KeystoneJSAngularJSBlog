@@ -1,10 +1,3 @@
-@clr-other: #000;
-@clr-music: #000;
-@clr-code: #000;
-@black: #000;
-@white: #fff;
-
-
 body{
 	background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iNSIgaGVpZ2h0PSI1IiBmaWxsPSIjZmZmIj48L3JlY3Q+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNjY2MiPjwvcmVjdD4KPC9zdmc+");
 	overflow-x: hidden;
@@ -16,7 +9,7 @@ body{
 	}
 	.logo{
 	    font-size: 20px;
-	    color: @black;
+	    color: #000;
 	    font-weight: bold;
 	}
 	#footer {
@@ -25,12 +18,16 @@ body{
 	}
 
 /*GEN*/
-
 	.panel{
 		box-shadow: none;
+		margin-bottom: 0px;
 	}
 	a:hover, a:focus{
-		color: @black;
+		color: #000;
+	}
+	li{
+		list-style-type: none;
+		margin: 0px
 	}
 /*POST LIST*/
 	.post{
@@ -39,88 +36,98 @@ body{
 	.post-list a{
 		font-size: 24px;
 		margin: 0px 0px 2px 0px;
-		color: #fff;
+		color: #433;
 		display: block;
 	}
-	.post-list .code, h2.code{
-		background: @clr-code;
+	.post-list a .span{
+		text-shadow: 0px 2px 0px #aaa;
 	}
-	.post-list .music, h2.music{
-		background: @clr-music;
+	.post-list .code{
+		background: #f29602;
 	}
-	.post-list .other, h2.other{
-		background: @clr-other;
+	.post-list .music{
+		background: #265f42;
+	}
+	.post-list .other{
+		background: #0202e5;
+	}
+	.code a{
+		color: #fff;
+	}
+	.music a{
+		color: #fff;
+	}
+	.other a{
+		color: #fff;
 	}
 
 	h2.code{
-		background: @clr-code;
-		color: @white;
+		background: #000;
+		color: #fff;
 	}
 
 	h2.music{
-		background: @clr-music;
-		color: @white;
+		background: #000;
+		color: #fff;
 	}
 
 	h2.other{
-		background: @clr-music;
-		color: @white;
+		background: #000;
+		color: #fff;
 	}
 	.post span{
 		margin-left: 10px;
 	}
 
 /*MENU*/
-	.category-list{
+	.category-list {
 		background: none;
+		li {
+			display: inline;
+			list-style-type: none;
+		 	margin: 0px 0px;
+		    padding: 0px 8px 0px 0px;
+			a {
+				color: green;
+				cursor: pointer;
+				padding: 0px 5px 0px 5px;
+				font-size: 52px;
+				&.active {
+					color: #00f
+				}
+				&.code {
+					color: #f00;
+				}
+				&.music {
+					color: #0f0;
+				}
+				&.other {
+					color: #00f;
+				}
+			}
+		}
 	}
-	.category-list h3{
-		display: inline;
-	}
-	.category-list li{
-		display: inline;
-		list-style-type: none;
-	 	margin: 0px 0px;
-	    padding: 0px 8px 0px 0px;
-	}
-	.category-list li a.code{
-		background-color: @clr-code;
-	}
-	.category-list li a.music{
-		background-color: @clr-music;
-	}
-	.category-list li a.other{
-		background-color: @clr-other;
-	}
-	.category-list li{
-	}
-	.category-list li {
-	}
-	.category-list li a{
-		padding: 0px 5px 0px 5px;
-		font-size: 22px;
-	    color: #fff;
-	}
+
 	@media (min-width : 200px) and (max-width : 480px) {
-		.category-list a {
-		    font-size: 16px;
+		.category-list li a {
+		    font-size: 18px;
 		}
 	}
 
 /*SINGLE POST*/
 	.single-nav{
-		height: 25px;
-		top: -20px;
+		height: 45px;
+		top: 0px;
 		position: relative;
 	}
 	.single-nav a.code{
-		color: @clr-code !important;
+		color: #000 !important;
 	}
 	.single-nav a.music{
-		color: @clr-music !important;
+		color: #000 !important;
 	}
 	.single-nav a.other{
-		color: @clr-other !important;
+		color: #000 !important;
 	}
 	.left-nav, .right-nav{
 		background-color: #eaeaea;
@@ -128,8 +135,30 @@ body{
 		font-size: 16px;
 		width: auto;
 	}
+@media (min-width : 200px) and (max-width : 480px) {
+	.left-nav, .right-nav{
+		font-size: 14px;
+	}
+}
+
 	a.left-nav, a.right-nav{
-		color: @black;
+		color: #000;
+		width: 29%;
+		opacity: 0.8;
+		transition: 300ms;
+	}
+@media (min-width : 200px) and (max-width : 560px) {
+	a.left-nav, a.right-nav{
+		width: 49%;
+	}
+}
+@media (min-width : 561px) and (max-width : 699px) {
+	a.left-nav, a.right-nav{
+		width: 39%;
+	}
+}
+	a.left-nav:hover, a.right-nav:hover{
+		opacity: 1;
 	}
 	.left-nav{
 		float: left;
@@ -138,17 +167,16 @@ body{
 		float: right;
 	}
 	.single-content h2 {
-	    margin-top: -15px;
+	    margin-top: 28px;
 	    text-align: center;
+	    clip-rule: nonzero;
 	}
-
-/*ANIM*/
-	.anim-in, .anim-out, .ng-animate{
-		position:absolute;
+@media (min-width : 200px) and (max-width : 480px) {
+	.single-content h2 {
+		margin-top: 20px;
+		font-size: 18px;
 	}
-	.anim-out-setup{
-		position:absolute
-	}
+}
 
 /*MIXINS*/
 	.no-margin{
@@ -160,23 +188,56 @@ body{
 
 @media (min-width : 200px) and (max-width : 480px) {
 	.container{
-		width: 300px
+		width: 300px;
+		padding: 0px;
 	}
 }
 
 @media (min-width : 481px) and (max-width : 560px) {
 	.container{
-		width: 460px
+		width: 460px;
+		padding: 0px;
 	}
 }
 @media (min-width : 561px) and (max-width : 699px) {
 	.container{
-		width: 540px
+		width: 540px;
+		padding: 0px;
 	}
 }
 
 @media (min-width : 700px) and (max-width : 767px) {
 	.container{
-		width: 680px
+		width: 680px;
+		padding: 0px;
 	}
+}
+
+.effeckt-list[data-effeckt-type='pop-in'] .new-item a{
+}
+
+.effeckt-list[data-effeckt-type='pop-in'] .remove-item{
+}
+.effeckt-list[data-effeckt-type='pop-in'] .remove-item a{
+/*	margin:0px;*/
+}
+
+.mofo.ng-enter {
+    -webkit-transition:all linear 1s;
+    transition:all linear 1s;
+    opacity: 0;
+	line-height: 0;
+}
+
+.mofo.ng-enter-stagger {
+	transition-delay: 0.1s;
+}
+
+.mofo.ng-enter.ng-enter-active{
+	opacity: 1;
+	line-height: 30px;
+}
+
+a.nav-cat.selected {
+	font-size: 50px
 }
