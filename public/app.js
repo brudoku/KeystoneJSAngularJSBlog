@@ -44,11 +44,19 @@ app.config(function config($stateProvider, $urlRouterProvider) {
 					return PostsFactory.postCatFn();
 				}
 			}
-		})		
-		.state('single', {
+		})
+		.state('topView.single', {
 			url: "/:slug/",
-			templateUrl: '/components/single/singleView.html',
-			controller: 'SingleViewCtrl',
+			views: {
+				'categories':{
+					templateUrl: '/components/home/categories.html',
+					controller: 'CatCtrl'
+				},
+				'single':{
+					templateUrl: '/components/single/singleView.html',
+					controller: 'SingleViewCtrl'
+				}
+			},
 			resolve: {
 				singlePost: function(PostsFactory, $stateParams) {
 					 return PostsFactory.singlePostFn($stateParams.slug);
@@ -60,11 +68,20 @@ app.config(function config($stateProvider, $urlRouterProvider) {
 		})
 });
 
-app.controller('CatCtrl', function($scope, $stateParams, postTitlesCats) {
-	$scope.currentCat = $stateParams.catName ? $stateParams.catName : 'index';
+app.controller('CatCtrl', function($scope, $stateParams, postTitlesCats, $state) {
+	// $scope.currentCat = $stateParams.catName ? $stateParams.catName : 'index';
 	$scope.posts = postTitlesCats;
 	$scope.categories = _.uniq(_.pluck(postTitlesCats,'category'));
 
+	$scope.isCategorySelected = function(cat){
+		log($state.current)
+		if($state.current.name == 'topView.single'){
+			log('single');
+		}else{
+			log('double');
+		}
+		return $stateParams.catName == cat ? 'active' : 'index';
+	}
 });
 
 app.controller('PostViewCtrl', function($scope, $stateParams, postTitlesCats) {

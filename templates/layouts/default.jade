@@ -6,12 +6,10 @@ html
 		meta(http-equiv="X-UA-Compatible" content="IE=edge")
 		title= title || 'Nybryx'
 		link(rel="shortcut icon", href="/favicon.ico", type="image/x-icon")
-		//- link(href="/assets/styles/anim-in-out.css", rel="stylesheet")
 		link(href="/assets/styles/bootstrap.min.css", rel="stylesheet")
 		link(href="/assets/styles/effeckt.css", rel="stylesheet")
-		//- link(href="/assets/styles/custom.css", rel="stylesheet")
 		link(href="/assets/styles/site/layout.less", rel="stylesheet")
-
+		link(href="/assets/styles/site/layout.css", rel="stylesheet")
 
 		if user && user.canAccessKeystone
 			link(href="/keystone/styles/content/editor.min.css", rel="stylesheet")
@@ -27,7 +25,6 @@ html
 		script(src='/assets/js/angular/angular.js')
 		script(src='/assets/js/angular/angular-ui-router.js')
 		script(src='/assets/js/angular/angular-animate.js')
-		//- script(src='/assets/js/angular/anim-in-out.js')
 		script(src='/assets/js/libs/ocLazyLoad.js')
 		script(src='/assets/js/libs/lodash.js')
 		script(src='/assets/js/angular/columns-directive.js')
