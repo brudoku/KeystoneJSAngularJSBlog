@@ -179,7 +179,7 @@ var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate'])
 			return getOrElse(list, currentIndex + 1, defaultValue);
 		}
 		var previousItem = function(list, currentIndex, defaultValue) {
-			return getOrElse(list, currentIndex	-1, defaultValue);
+			return getOrElse(list, currentIndex	- 1, defaultValue);
 		}
 		var getOrElse = function(list, index, defaultValue) {
 			return isOutOfRange(list, index) ? defaultValue : list[index];
@@ -189,9 +189,10 @@ var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate'])
 		}
 		var emptyPost = function() {
 			return {
-				nextSlug: '',
-				nextTitle: '',
-				prevCat: ''
+				title: '',
+				slug: '',
+				cat: '',
+				empty: true
 			}
 		}
 		var getProps = function(post) {
@@ -217,21 +218,19 @@ var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate'])
 	postsHandler.getCats = function(postData){
 		return _.uniq(_.pluck(postData,'category'))
 	}
-	postsHandler.setPostData = function(postsArray){
-		postsHandler.postData = postsArray;
-	}
-	postsHandler.isSingleInCategory = function(postData, slug){
+	postsHandler.getCategoryBySlug = function(postData, slug){
 		return _.find(postData, function(post){
 			return post.slug == slug;
-		}).category;
+		});
 	}
+
 })
 
-.run(['$state', 'postsHandler', 'PostsFactory', function($state, postsHandler, PostsFactory) {
+.run(['$state', 'postsHandler', 'PostsFactory', function($state) {
 	$state.go('topView.posts');
 }]);
 
-function nav($stateParams, postTitlesCats, $state, postsHandler, $location, $rootScope) {
+function nav($stateParams, postTitlesCats, postsHandler) {
 	var nav = this;
 	nav.posts = postTitlesCats;
 	nav.categories = postsHandler.getCats(postTitlesCats);
@@ -239,7 +238,7 @@ function nav($stateParams, postTitlesCats, $state, postsHandler, $location, $roo
 	nav.isCategorySelected = function(cat){	
 		var currentCat = '';
 		if($stateParams.slug){
-			currentCat = postsHandler.isSingleInCategory(postTitlesCats, $stateParams.slug) == cat ? 'active' : '';
+			currentCat = postsHandler.getCategoryBySlug(postTitlesCats, $stateParams.slug).category == cat ? 'active' : '';
 			return currentCat;
 		} else {
 			return $stateParams.catName == cat ? 'active' : '';
@@ -262,15 +261,20 @@ function postsView($stateParams, postTitlesCats) {
 	}
 }
 
-function singleView(postTitlesCats, singlePost, $sce, $ocLazyLoad, Utility) {
-	var postId = _.indexOf(_.pluck(postTitlesCats, 'title'), singlePost.title);
+function singleView(postTitlesCats, singlePost, $sce, $ocLazyLoad, Utility, postsHandler) {
+	var postsInCategoryOrder = _.filter(postTitlesCats, function(post){
+		var cat = postsHandler.getCategoryBySlug(postTitlesCats, singlePost.slug).category;
+		return post.category == cat;
+	});
+	var postIndex = _.indexOf(_.pluck(postsInCategoryOrder, 'title'), singlePost.title);
+	log(singlePost.slug)
 	var singleView = this;
 	singleView.title = $sce.trustAsHtml(singlePost.title);
 	singleView.content = $sce.trustAsHtml(singlePost.content.extended);
 	singleView.image = singlePost.image ? singlePost.image.url : undefined;
 	singleView.template = $sce.trustAsHtml(singlePost.templates);
-	singleView.prev = Utility.getItem().getPrev(postTitlesCats, postId);
-	singleView.next = Utility.getItem().getNext(postTitlesCats, postId);
+	singleView.prev = Utility.getItem().getPrev(postsInCategoryOrder, postIndex);
+	singleView.next = Utility.getItem().getNext(postsInCategoryOrder, postIndex);
 	singleView.scriptUpload = singlePost.scriptUpload;
 	if (singleView.scriptUpload) {
 		var filesToLoad = _.map(singleView.scriptUpload, function(file) {

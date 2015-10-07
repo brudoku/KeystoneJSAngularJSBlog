@@ -1,10 +1,12 @@
 <h1>Single</h1>
 <div class="single-nav">
-	<a class="left-nav  {{singleView.prev.cat}}" href="#/{{singleView.prev.slug}}/"><span class="pull-left">&#60;&#60;{{singleView.prev.title}}</span></a>
+	<div ng-if="singleView.prev.empty != true">
+		<a class="left-nav  {{singleView.prev.cat}}" href="#/{{singleView.prev.slug}}/"><span class="pull-left">&#60;&#60;{{singleView.prev.title}}</span></a>
+	</div>
 	<a class="right-nav  {{singleViewnext.cat}}" href="#/{{singleView.next.slug}}/"><span class="pull-right">{{singleView.next.title}}&#62;&#62;</span></a>
 </div>
 <div class="single-content ">
-	<h2 class=" {{singleView.category}}">{{title}}</h2>
+	<h2 class=" {{singleView.category}}">{{singleView.title}}</h2>
 	<p ng-bind-html="singleView.content"></p>
 	<div ng-if="singleView.hasImage(image)">
 		<img ng-src="{{singleView.image}}" />
