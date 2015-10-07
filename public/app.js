@@ -1,8 +1,8 @@
-// var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate', 'anim-in-out']);
-var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate']);
-// var app = angular.module('app', ['ui.router', 'oc.lazyLoad']);
+(function () {
 
-app.config(function config($stateProvider, $urlRouterProvider) {
+var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate'])
+
+.config(function config($stateProvider, $urlRouterProvider) {
 	$stateProvider
 		.state('topView',{
 			abstract: true,
@@ -14,11 +14,11 @@ app.config(function config($stateProvider, $urlRouterProvider) {
 			views: {
 				'categories':{
 					templateUrl: '/components/home/categories.html',
-					controller: 'CatCtrl'
+					controller: 'NavCtrl as nav'
 				},
 				'posts':{
 					templateUrl: '/components/home/posts.html',
-					controller: 'PostViewCtrl'
+					controller: 'PostsViewCtrl as postsView'
 				}
 			},
 			resolve: {
@@ -32,11 +32,11 @@ app.config(function config($stateProvider, $urlRouterProvider) {
 			views: {
 				'categories':{
 					templateUrl: '/components/home/categories.html',
-					controller: 'CatCtrl'
+					controller: 'NavCtrl as nav'
 				},
 				'posts':{
 					templateUrl: '/components/home/posts.html',
-					controller: 'PostViewCtrl'
+					controller: 'PostsViewCtrl as postsView'
 				}
 			},
 			resolve: {
@@ -50,11 +50,12 @@ app.config(function config($stateProvider, $urlRouterProvider) {
 			views: {
 				'categories':{
 					templateUrl: '/components/home/categories.html',
-					controller: 'CatCtrl'
+					controller: 'NavCtrl as nav',
+					controllerAs: 'nav'
 				},
 				'single':{
 					templateUrl: '/components/single/singleView.html',
-					controller: 'SingleViewCtrl'
+					controller: 'SingleViewCtrl as singleView'
 				}
 			},
 			resolve: {
@@ -66,72 +67,19 @@ app.config(function config($stateProvider, $urlRouterProvider) {
 				}
 			}
 		})
-});
+})
 
-app.controller('CatCtrl', function($scope, $stateParams, postTitlesCats, $state) {
-	// $scope.currentCat = $stateParams.catName ? $stateParams.catName : 'index';
-	$scope.posts = postTitlesCats;
-	$scope.categories = _.uniq(_.pluck(postTitlesCats,'category'));
+.controller('NavCtrl', nav)
 
-	$scope.isCategorySelected = function(cat){
-		log($state.current)
-		if($state.current.name == 'topView.single'){
-			log('single');
-		}else{
-			log('double');
-		}
-		return $stateParams.catName == cat ? 'active' : 'index';
-	}
-});
+.controller('PostsViewCtrl', postsView)
 
-app.controller('PostViewCtrl', function($scope, $stateParams, postTitlesCats) {
-	$scope.currentCat = $stateParams.catName ? $stateParams.catName : 'index';
-	$scope.categories = _.uniq(_.pluck(postTitlesCats,'category'));
-	var catParam = $stateParams.catName ? $stateParams.catName.toLowerCase() : null;
-	if(!catParam){
-		$scope.posts = postTitlesCats;
-	}else{
-		$scope.posts = _.map(postTitlesCats, function(post){
-			post.category == catParam ? post.isCategorySelected = true : post.isCategorySelected = false;
-			return post;
-		});
-	}
-		setTimeout(function(){
-			$scope.$apply(function(){
+.controller('SingleViewCtrl', singleView)
 
-				$scope.categories.pop();
-			})
-	},1000)
-});
-
-app.controller('SingleViewCtrl', function($scope, postTitlesCats, singlePost, $sce, $ocLazyLoad, Utility) {
-	var postId = _.indexOf(_.pluck(postTitlesCats, 'title'), singlePost.title);
-	$scope.title = $sce.trustAsHtml(singlePost.title);
-	$scope.content = $sce.trustAsHtml(singlePost.content.extended);
-	$scope.image = singlePost.image ? singlePost.image.url : undefined;
-	$scope.template = $sce.trustAsHtml(singlePost.templates);
-	$scope.prev = Utility.getItem().getPrev(postTitlesCats, postId);
-	$scope.next = Utility.getItem().getNext(postTitlesCats, postId);
-	$scope.scriptUpload = singlePost.scriptUpload;
-	if ($scope.scriptUpload) {
-		var filesToLoad = _.map($scope.scriptUpload, function(file) {
-			return 'data/' + file.filename;
-		})
-		$ocLazyLoad.load([{
-			files: filesToLoad,
-			cache: false
-		}]);
-	}
-	$scope.hasImage = function(postImage) {
-		return (postImage == undefined ? false : true)
-	}
-});
-
-app.factory('PostsCache', function($cacheFactory){
+.factory('PostsCache', function($cacheFactory){
 	return $cacheFactory('cachedPosts')
-});
+})
 
-app.service('PostsFactory', function(PostsAPI, $q, PostsCache) {
+.service('PostsFactory', function(PostsAPI, $q, PostsCache) {
 	var getPostTitlesAndCat = function(){
 		return function(){
 			var deferred = $q.defer();
@@ -167,9 +115,9 @@ app.service('PostsFactory', function(PostsAPI, $q, PostsCache) {
 	}
 	return {postCatFn: getPostTitlesAndCat,
 			singlePostFn: getSinglePost}
-});
+})
 
-app.service('PostsAPI', function($http, $q, PostsCache) {
+.service('PostsAPI', function($http, $q, PostsCache) {
 	var getCats = function() {
 		return function() {
 			var deferred = $q.defer();
@@ -223,9 +171,9 @@ app.service('PostsAPI', function($http, $q, PostsCache) {
 		singlePostFn: getSingle,
 		postTitlesFn: getPostTitles
 	}
-});
+})
 
-app.service('Utility', function(){
+.service('Utility', function(){
 	function getPrevNextItem(){
 		var nextItem = function(list, currentIndex, defaultValue) {
 			return getOrElse(list, currentIndex + 1, defaultValue);
@@ -262,10 +210,82 @@ app.service('Utility', function(){
 		return this;
 	}
 	return {getItem: getPrevNextItem}
-});
+})
 
-app.run(['$state', function($state) {
+.service('postsHandler', function PostsHandler(){
+	var postsHandler = this;
+	postsHandler.getCats = function(postData){
+		return _.uniq(_.pluck(postData,'category'))
+	}
+	postsHandler.setPostData = function(postsArray){
+		postsHandler.postData = postsArray;
+	}
+	postsHandler.isSingleInCategory = function(postData, slug){
+		return _.find(postData, function(post){
+			return post.slug == slug;
+		}).category;
+	}
+})
+
+.run(['$state', 'postsHandler', 'PostsFactory', function($state, postsHandler, PostsFactory) {
 	$state.go('topView.posts');
 }]);
 
+function nav($stateParams, postTitlesCats, $state, postsHandler, $location, $rootScope) {
+	var nav = this;
+	nav.posts = postTitlesCats;
+	nav.categories = postsHandler.getCats(postTitlesCats);
+
+	nav.isCategorySelected = function(cat){	
+		var currentCat = '';
+		if($stateParams.slug){
+			currentCat = postsHandler.isSingleInCategory(postTitlesCats, $stateParams.slug) == cat ? 'active' : '';
+			return currentCat;
+		} else {
+			return $stateParams.catName == cat ? 'active' : '';
+		}
+	}
+}
+
+function postsView($stateParams, postTitlesCats) {
+	var postsView = this;
+	postsView.currentCat = $stateParams.catName ? $stateParams.catName : 'index';
+	postsView.categories = _.uniq(_.pluck(postTitlesCats,'category'));
+	var catParam = $stateParams.catName ? $stateParams.catName.toLowerCase() : null;
+	if(!catParam){
+		postsView.posts = postTitlesCats;
+	}else{
+		postsView.posts = _.map(postTitlesCats, function(post){
+			post.category == catParam ? post.isCategorySelected = true : post.isCategorySelected = false;
+			return post;
+		});
+	}
+}
+
+function singleView(postTitlesCats, singlePost, $sce, $ocLazyLoad, Utility) {
+	var postId = _.indexOf(_.pluck(postTitlesCats, 'title'), singlePost.title);
+	var singleView = this;
+	singleView.title = $sce.trustAsHtml(singlePost.title);
+	singleView.content = $sce.trustAsHtml(singlePost.content.extended);
+	singleView.image = singlePost.image ? singlePost.image.url : undefined;
+	singleView.template = $sce.trustAsHtml(singlePost.templates);
+	singleView.prev = Utility.getItem().getPrev(postTitlesCats, postId);
+	singleView.next = Utility.getItem().getNext(postTitlesCats, postId);
+	singleView.scriptUpload = singlePost.scriptUpload;
+	if (singleView.scriptUpload) {
+		var filesToLoad = _.map(singleView.scriptUpload, function(file) {
+			return 'data/' + file.filename;
+		})
+		$ocLazyLoad.load([{
+			files: filesToLoad,
+			cache: false
+		}]);
+	}
+	singleView.hasImage = function(postImage) {
+		return (postImage == undefined ? false : true)
+	}
+}
+
 function log(msg) {	console.log(msg)}
+
+})();
