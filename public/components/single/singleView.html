@@ -1,8 +1,5 @@
-<h1>Single</h1>
 <div class="single-nav">
-	<div ng-if="singleView.prev.empty != true">
-		<a class="left-nav  {{singleView.prev.cat}}" href="#/{{singleView.prev.slug}}/"><span class="pull-left">&#60;&#60;{{singleView.prev.title}}</span></a>
-	</div>
+	<a class="left-nav  {{singleView.prev.cat}}" href="#/{{singleView.prev.slug}}/"><span class="pull-left">&#60;&#60;{{singleView.prev.title}}</span></a>
 	<a class="right-nav  {{singleViewnext.cat}}" href="#/{{singleView.next.slug}}/"><span class="pull-right">{{singleView.next.title}}&#62;&#62;</span></a>
 </div>
 <div class="single-content ">
@@ -12,3 +9,7 @@
 		<img ng-src="{{singleView.image}}" />
 	</div>
 </div>
+<div ng-click="onStartAnimationClick()">box2</div>
+
+<p>animationState:{{animationState}}</p>
+<div id="animatedBoxParent"></div>

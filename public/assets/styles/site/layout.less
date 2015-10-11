@@ -1,9 +1,10 @@
 body{
 	background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iNSIgaGVpZ2h0PSI1IiBmaWxsPSIjZmZmIj48L3JlY3Q+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNjY2MiPjwvcmVjdD4KPC9zdmc+");
 	overflow-x: hidden;
+	font-family: 'Raleway', sans-serif;
 }
 
-@col: #0f0;
+@col: #f00;
 
 /*HED FUT*/
 	#header {
@@ -216,14 +217,6 @@ body{
 	}
 }
 
-.effeckt-list[data-effeckt-type='pop-in'] .new-item a{
-}
-
-.effeckt-list[data-effeckt-type='pop-in'] .remove-item{
-}
-.effeckt-list[data-effeckt-type='pop-in'] .remove-item a{
-/*	margin:0px;*/
-}
 
 .mofo.ng-enter {
     -webkit-transition:all linear 1s;
@@ -243,4 +236,169 @@ body{
 
 a.nav-cat.selected {
 	font-size: 50px
+}
+
+
+.remove-item{
+	display: none
+}
+
+
+.animated-element.ng-enter,
+.animated-element.ng-leave,
+.animated-element.ng-move,
+.animated-element.bs-add,
+.animated-element.bs-remove
+{
+  -webkit-transition: 1.5s linear all;
+  transition: 1.5s linear all;
+}
+
+.animated-element.ng-enter { opacity: 0; }
+.animated-element.ng-enter.ng-enter-active { opacity: 1; }
+
+.animated-element.ng-leave { opacity: 1; }
+.animated-element.ng-leave.ng-leave-active { opacity: 0; }
+
+.animated-element.ng-move { opacity: 0; }
+.animated-element.ng-move.ng-move-active { opacity: 1; }
+.animated-element.ng-move-stagger
+{
+  /* Set a 400ms delay between each successive move animation */
+  -webkit-transition-delay: 0.4s;
+  transition-delay: 0.4s;
+
+  /*
+   * In case the stagger doesn't work then these two values
+   * must be set to 0 to avoid an accidental CSS inheritance.
+  */
+  -webkit-transition-duration: 0s;
+  transition-duration: 0s;
+}
+
+.animated-element.bs-add { opacity: 0; }
+.animated-element.bs-add.bs-add-active { opacity: 1; }
+
+.animated-element.bs-remove { opacity: 1; }
+.animated-element.bs-remove.bs-remove-active { opacity: 0; }
+
+@-webkit-keyframes blinkAndGrow
+{
+  from
+  {
+    background-color: lightskyblue;
+  }
+  25%, 75%
+  {
+    transform: scale(1.1);
+    background-color: blue;
+  }
+  50%
+  {
+    transform: scale(1.0);
+    background-color: lightskyblue;
+  }
+  to
+  {
+    background-color: lightskyblue;
+  }
+}
+
+@keyframes blinkAndGrow
+{
+  from
+  {
+    background-color: lightskyblue;
+  }
+  25%, 75%
+  {
+    transform: scale(1.1);
+    background-color: blue;
+  }
+  50%
+  {
+    transform: scale(1.0);
+    background-color: lightskyblue;
+  }
+  to
+  {
+    background-color: lightskyblue;
+  }
+}
+
+@-webkit-keyframes shrinkAndDisappear
+{
+  from
+  {
+    opacity: 1;
+  }
+  70%
+  {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  to
+  {
+    transform: scale(0.0);
+    opacity: 0;
+  }
+}
+
+@keyframes shrinkAndDisappear
+{
+  from
+  {
+    opacity: 1;
+  }
+  70%
+  {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  to
+  {
+    transform: scale(0.0);
+    opacity: 0;
+  }
+}
+
+.animated-element-with-keyframes.ng-enter
+{
+  -webkit-animation: blinkAndGrow 1.0s linear;
+  animation: blinkAndGrow 1.0s linear;
+}
+
+.animated-element-with-keyframes.ng-leave
+{
+  -webkit-animation: shrinkAndDisappear 0.8s linear;
+  animation: shrinkAndDisappear 0.8s linear;
+}
+
+
+.bs a{ font-size: 40px}
+
+
+*
+{
+  box-sizing: border-box;
+}
+
+.box
+{
+  width: 100px;
+  height: 100px;
+  background-color: lightskyblue;
+  display: block;
+}
+.box.second{
+	background: red
+}
+.box-border
+{
+  border: 1px solid #808080;
+          // element.css({opacity: (i / 100)});
+}
+
+
+#animatedBoxParent{
 }

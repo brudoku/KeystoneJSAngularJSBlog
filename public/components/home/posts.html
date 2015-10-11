@@ -1,8 +1,18 @@
-<h1>Posts</h1>
-<div class="post-list effeckt-list" data-effeckt-type="pop-in">
-	<li ng-repeat="post in postsView.posts" class="post {{post.category}}" ng-class="{'new-item':post.isCategorySelected,'remove-item': !post.isCategorySelected}">
+<div class="post-list">
+	<!-- <li ng-repeat="post in postsView.posts" class="post {{post.category}}" ng-class="{'new-item':post.isCategorySelected,'remove-item': !post.isCategorySelected}"> -->
+	<li ng-repeat="post in postsView.posts" class="post animated-element {{post.category}} {{post.cust}}" >
 		<a href="#/{{post.slug}}/">
 			<span>{{post.title}}</span>
 		</a>
 	</li>
 </div>
+
+<button ng-click="reverse()">reverse</button>
+<button ng-click="pop()">pop</button>
+<button ng-click="addClass()">addClass</button>
+<button ng-click="removeClass()">removeClass</button>
+
+<div ng-click="onStartAnimationClick()">box2</div>
+
+<p>animationState:{{animationState}}</p>
+<div id="animatedBoxParent"></div>
