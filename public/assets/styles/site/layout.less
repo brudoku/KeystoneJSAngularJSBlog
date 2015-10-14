@@ -246,9 +246,7 @@ a.nav-cat.selected {
 
 .animated-element.ng-enter,
 .animated-element.ng-leave,
-.animated-element.ng-move,
-.animated-element.bs-add,
-.animated-element.bs-remove
+.animated-element.ng-move
 {
   -webkit-transition: 1.5s linear all;
   transition: 1.5s linear all;
@@ -275,12 +273,6 @@ a.nav-cat.selected {
   -webkit-transition-duration: 0s;
   transition-duration: 0s;
 }
-
-.animated-element.bs-add { opacity: 0; }
-.animated-element.bs-add.bs-add-active { opacity: 1; }
-
-.animated-element.bs-remove { opacity: 1; }
-.animated-element.bs-remove.bs-remove-active { opacity: 0; }
 
 @-webkit-keyframes blinkAndGrow
 {
@@ -374,10 +366,6 @@ a.nav-cat.selected {
   animation: shrinkAndDisappear 0.8s linear;
 }
 
-
-.bs a{ font-size: 40px}
-
-
 *
 {
   box-sizing: border-box;
@@ -395,7 +383,7 @@ a.nav-cat.selected {
 }
 .box-border
 {
-  border: 1px solid #808080;
+  border: 11px solid #808080;
           // element.css({opacity: (i / 100)});
 }
 

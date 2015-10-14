@@ -72,7 +72,7 @@ var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate'])
 .factory('PostsCache', function($cacheFactory){
 	return $cacheFactory('cachedPosts')
 })
-.service('PostsFactory', function(PostsAPI, $q, PostsCache) {
+.service('PostsFactory', function(PostsAPI, $q, PostsCache, $timeout) {
 	var getPostTitlesAndCat = function(){
 		return function(){
 			var deferred = $q.defer();
@@ -83,9 +83,8 @@ var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate'])
 							return post.category == cat._id})[0].key;
 							var clone = _.clone(post);
 						return _.extend(clone, {isCategorySelected: true, category: catName});
-
 					});
-					deferred.resolve(postsCats);
+					$timeout(function(){ deferred.resolve(postsCats)}, 500);
 				});
 			});
 			return deferred.promise;
@@ -214,364 +213,128 @@ var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate'])
 		});
 	}
 })
-.animation(".custom-js-animation", function ($timeout){
-    return {
-      animate: function(element, className, from, to, done){
+.animation(".single-view-next-post-anim", function ($timeout){
+  return {
+    enter: function (element, done){
+      // $(element).css('border','solid 1px red')
+       snabbt(element, {
+          position: [0, 0, 0],
+          duration: 200,
+          easing: 'ease',
+          rotation: [Math.PI/2, 0, 0]
+        });
         done();
-      },
-      enter: function (element, done){
-        var i = 0;
-        var animateFunc = function(){
-          element.css({opacity: (i / 100)});
-          i++;
-          if (i <= 100){
-            $timeout(animateFunc, 10);
-          }else{
-            done();
-          }
-        }
-        animateFunc();
-        return function (cancelled){
-          if (cancelled){
-            i = 100;
-          }
-        }
-      },
-      leave: function (element, done){
-        var targetScale = 0.1;
-        var animationSteps = 100;
-        var i = animationSteps;
-        var currScale = 1.0;
-        var scaleDecPerStep = (currScale - targetScale) / animationSteps;
-        var animateFunc = function (){
-          element.css({
-              opacity: (i / animationSteps),
-              transform: "scale(" + currScale + ")"
-            });
-          currScale -= scaleDecPerStep;
-          i--;
-          if (i >= 0){
-            $timeout(animateFunc, 250);
-          }else{
-            done();
-          }
-        }
-        animateFunc();
-        return function (cancelled){
-          if (cancelled){
-            i = 0;
-          }
-        }
-      },
-      move: function (element, done){
-        done();
-      },
-      beforeAddClass: function (element, className, done){
-        if (className == "box-border"){
-          var i = 0;
-          var targetScale = 1.1;
-          var animationSteps = 100;
-          var currScale = 1.0;
-          var scaleIncPerStep = (targetScale - currScale) / animationSteps;
-          var animateFunc = function (){
-            element.css({transform: "scale(" + currScale + ")"});
-            currScale += scaleIncPerStep;
-            i++;
-            if (i <= animationSteps){
-              $timeout(animateFunc, 10);
-            }else{
-              element.css({transform: "scale(" + targetScale + ")"});
-              done();
-            }
-          }
-          animateFunc();
-        }else{
-          done();
-        }
-        return function (cancelled){
-          if (cancelled){
-            i = animationSteps;
-          }
-        }
-      },
-      addClass: function (element, className, done){
-        if (className == "box-border"){
-          var i = 0;
-          var targetScale = 1.0;
-          var animationSteps = 100;
-          var currScale = 1.1;
-          var scaleDecPerStep = (currScale - targetScale) / animationSteps;
-          var animateFunc = function (){
-            element.css({transform: "scale(" + currScale + ")"});
-            currScale -= scaleDecPerStep;
-            i++;
-            if (i <= animationSteps){
-              $timeout(animateFunc, 10);
-            }else{
-              element.css({transform: "scale(" + targetScale + ")"});
-              done();
-            }
-          }
-          animateFunc();
-        }else{
-          done();
-        }
-        return function (cancelled){
-          if (cancelled){
-            i = animationSteps;
-          }
-        };
-      },
-      beforeRemoveClass: function (element, className, done){
-        if (className == "box-border"){
-          var i = 0;
-          var targetMultiplier = 1.0;
-          var animationSteps = 100;
-          var currMultiplier = 0.0;
-          var multIncPerStep = (targetMultiplier - currMultiplier) / animationSteps;
-          var animateFunc = function (){
-            element.css({
-                "box-shadow": "0px 0px " +
-                Math.round(15 * currMultiplier) + "px " +
-                Math.round(5 * currMultiplier) + "px rgba(255, 0, 0, 0.75)"
-              }
-            );
-            currMultiplier += multIncPerStep;
-            i++;
-            if (i <= animationSteps){
-              $timeout(animateFunc, 10);
-            }else{
-              element.css({"box-shadow": "0px 0px 15px 5px rgba(135, 206, 250, 0.75)"});
-              done();
-            }
-          }
-          animateFunc();
-        }else{
-          done();
-        }
-        return function (cancelled){
-          if (cancelled){
-            i = animationSteps;
-          }
-        }
-      },
-      removeClass: function (element, className, done){
-        if (className == "box-border"){
-          var i = 0;
-          var targetMultiplier = 0.0;
-          var animationSteps = 100;
-          var currMultiplier = 1.0;
-          var multDecPerStep = (currMultiplier - targetMultiplier) / animationSteps;
-          var animateFunc = function (){
-            element.css({
-                "box-shadow": "0px 0px " +
-                Math.round(15 * currMultiplier) + "px " +
-                Math.round(5 * currMultiplier) + "px rgba(135, 206, 250, 0.75)"
-              });
-
-            currMultiplier -= multDecPerStep;
-            i++;
-
-            if (i <= animationSteps){
-              $timeout(animateFunc, 10);
-            }else{
-              element.css({"box-shadow": "none"});
-              done();
-            }
-          }
-          animateFunc();
-        }else{
-          done();
-        }
-        return function (cancelled){
-	        if (cancelled){
-	            i = animationSteps;
-          	}
-        }
-      }
+    },
+    leave: function(element){
+      snabbt(elem, {
+        position: [0, 0, 0],
+        duration: 500,
+        easing: 'ease',
+        rotation: [Math.PI/2, 0, 0]
+      });
     }
-  })
-.animation(".cunt-js-animation", function ($timeout){
-    return {
-      animate: function(element, className, from, to, done){
-        done();
-      },
-      enter: function (element, done){
-        var i = 0;
-        var animateFunc = function(){
-          element.css({opacity: (i / 100)});
-          i++;
-          if (i <= 100){
-            $timeout(animateFunc, 1);
-          }else{
-            done();
-          }
-        }
-        animateFunc();
-        return function (cancelled){
-          if (cancelled){
-            i = 100;
-          }
-        }
-      },
-      leave: function (element, done){
-        var targetScale = 0.1;
-        var animationSteps = 100;
-        var i = animationSteps;
-        var currScale = 1.0;
-        var scaleDecPerStep = (currScale - targetScale) / animationSteps;
-        var animateFunc = function (){
-          element.css({
-              opacity: (i / animationSteps),
-              transform: "scale(" + currScale + ")"
-            });
-          currScale -= scaleDecPerStep;
-          i--;
-          if (i >= 0){
-            $timeout(animateFunc, 1);
-          }else{
-            done();
-          }
-        }
-        animateFunc();
-        return function (cancelled){
-          if (cancelled){
-            i = 0;
-          }
-        }
-      },
-      move: function (element, done){
-        done();
-      },
-      beforeAddClass: function (element, className, done){
-        if (className == "box-border"){
-          var i = 0;
-          var targetScale = 1.1;
-          var animationSteps = 100;
-          var currScale = 1.0;
-          var scaleIncPerStep = (targetScale - currScale) / animationSteps;
-          var animateFunc = function (){
-            element.css({transform: "scale(" + currScale + ")"});
-            currScale += scaleIncPerStep;
-            i++;
-            if (i <= animationSteps){
-              $timeout(animateFunc, 1);
-            }else{
-              element.css({transform: "scale(" + targetScale + ")"});
-              done();
-            }
-          }
-          animateFunc();
-        }else{
-          done();
-        }
-        return function (cancelled){
-          if (cancelled){
-            i = animationSteps;
-          }
-        }
-      },
-      addClass: function (element, className, done){
-        if (className == "box-border"){
-          var i = 0;
-          var targetScale = 1.0;
-          var animationSteps = 100;
-          var currScale = 1.1;
-          var scaleDecPerStep = (currScale - targetScale) / animationSteps;
-          var animateFunc = function (){
-            element.css({transform: "scale(" + currScale + ")"});
-            currScale -= scaleDecPerStep;
-            i++;
-            if (i <= animationSteps){
-              $timeout(animateFunc, 1);
-            }else{
-              element.css({transform: "scale(" + targetScale + ")"});
-              done();
-            }
-          }
-          animateFunc();
-        }else{
-          done();
-        }
-        return function (cancelled){
-          if (cancelled){
-            i = animationSteps;
-          }
-        };
-      },
-      beforeRemoveClass: function (element, className, done){
-        if (className == "box-border"){
-          var i = 0;
-          var targetMultiplier = 1.0;
-          var animationSteps = 100;
-          var currMultiplier = 0.0;
-          var multIncPerStep = (targetMultiplier - currMultiplier) / animationSteps;
-          var animateFunc = function (){
-            element.css({
-                "box-shadow": "0px 0px " +
-                Math.round(15 * currMultiplier) + "px " +
-                Math.round(5 * currMultiplier) + "px rgba(135, 206, 250, 0.75)"
-              }
-            );
-            currMultiplier += multIncPerStep;
-            i++;
-            if (i <= animationSteps){
-              $timeout(animateFunc, 1);
-            }else{
-              element.css({"box-shadow": "0px 0px 15px 5px rgba(135, 206, 250, 0.75)"});
-              done();
-            }
-          }
-          animateFunc();
-        }else{
-          done();
-        }
-        return function (cancelled){
-          if (cancelled){
-            i = animationSteps;
-          }
-        }
-      },
-      removeClass: function (element, className, done){
-        if (className == "box-border"){
-          var i = 0;
-          var targetMultiplier = 0.0;
-          var animationSteps = 100;
-          var currMultiplier = 1.0;
-          var multDecPerStep = (currMultiplier - targetMultiplier) / animationSteps;
-          var animateFunc = function (){
-            element.css({
-                "box-shadow": "0px 0px " +
-                Math.round(15 * currMultiplier) + "px " +
-                Math.round(5 * currMultiplier) + "px rgba(135, 206, 250, 0.75)"
-              });
+  }
+})
+.service('postAnim', function($animate){
+  var currAnimationPromise = null;
+    var ngAnim = function(elem){
+      elem = angular.element(elem)
+      currAnimationPromise = $animate.enter(elem, elem.parent());
+      // currAnimationPromise.then(function(){
 
-            currMultiplier -= multDecPerStep;
-            i++;
-
-            if (i <= animationSteps){
-              $timeout(animateFunc, 1);
-            }else{
-              element.css({"box-shadow": "none"});
-              done();
-            }
-          }
-          animateFunc();
-        }else{
-          done();
-        }
-        return function (cancelled){
-	        if (cancelled){
-	            i = animationSteps;
-          	}
-        }
-      }
+      // })
     }
-  })
+    return {a1: ngAnim}
+})
+.directive('catHover', function(){
+  return {
+    restrict: 'A',
+    link: function(scope, elem){
+      $(elem).on('mouseover', function(){
+        $(elem).css('position','absolute')
+        snabbt(elem[0], {
+          rotation: [1, 1, 0],
+          duration: 2000,
+          easing: 'ease'
+        })
+      })
+      $(elem).on('mouseleave', function(){
+        $(elem).css('position','relative')
+        snabbt(elem[0], {
+          rotation: [0, 0, 0],
+          duration: 200,
+          easing: 'ease'
+        })
+      })
+    }
+  }
+})
 .run(['$state', 'postsHandler', 'PostsFactory', function($state) {
-	$state.go('topView.posts');
-}]);
-function nav($stateParams, postTitlesCats, postsHandler) {
+  $state.go('topView.posts');
+}])
+.service('rootService', function($rootScope){
+  var stateData = {};
+  var states = {
+    'topView.posts': 'postsUI',
+    'topView.category': 'postsUI',
+    'topView.single': 'singleUI'
+  }
+  $rootScope.$on('$stateChangeStart', function(evt, toState, toParams, fromState, fromParams){
+    stateData.from = fromState.name,
+    stateData.to = toState.name;
+    });
+  return {
+    getFromState: function(){
+      return states[stateData.from]
+    },
+    getToState: function(){
+      return states[stateData.to]
+    }
+  }
+})
+function postsView(postTitlesCats, $scope, $animate, postAnim, rootService,  $stateParams, $rootScope) {
+  $rootScope.$on('$stateChangeStart', function(evt, toState, toParams, fromState, fromParams){
+    var currentView  = '#' + rootService.getFromState();
+    var animatedBox = document.querySelector(currentView);
+    postAnim.a1(animatedBox);
+  })
+  var postsView = this;
+  postsView.currentCat = $stateParams.catName ? $stateParams.catName : 'index';
+  postsView.categories = _.uniq(_.pluck(postTitlesCats,'category'));
+  var catParam = $stateParams.catName ? $stateParams.catName.toLowerCase() : null;
+  postsView.posts = !catParam ? postTitlesCats : _.filter(postTitlesCats, function(post){return post.category == catParam;});
+}
+function singleView($scope, postTitlesCats, singlePost, $sce, $ocLazyLoad, Utility, postsHandler, $animate, $timeout, $rootScope, postAnim, rootService) {  
+  $rootScope.$on('$stateChangeStart', function(evt, toState, toParams, fromState, fromParams){
+    var currentView  = '#' + rootService.getFromState();
+    var animatedBox = document.querySelector(currentView);
+    postAnim.a1(animatedBox);
+  })
+  var postsInCategoryOrder = _.filter(postTitlesCats, function(post){
+    var cat = postsHandler.getCategoryBySlug(postTitlesCats, singlePost.slug).category;
+    return post.category == cat;
+  });
+  var postIndex = _.indexOf(_.pluck(postsInCategoryOrder, 'title'), singlePost.title);
+  var singleView = this;
+  singleView.hasImage = function(postImage) {return (postImage == undefined ? false : true)}
+  singleView.title = $sce.trustAsHtml(singlePost.title);
+  singleView.content = $sce.trustAsHtml(singlePost.content.extended);
+  singleView.image = singlePost.image ? singlePost.image.url : undefined;
+  singleView.template = $sce.trustAsHtml(singlePost.templates);
+  singleView.prev = Utility.getItem().getPrev(postsInCategoryOrder, postIndex);
+  singleView.next = Utility.getItem().getNext(postsInCategoryOrder, postIndex);
+  singleView.scriptUpload = singlePost.scriptUpload;
+  if (singleView.scriptUpload) {
+    var filesToLoad = _.map(singleView.scriptUpload, function(file) {
+      return 'data/' + file.filename;
+    })
+    $ocLazyLoad.load([{
+      files: filesToLoad,
+      cache: false
+    }]);
+  }
+}
+function nav($scope, $stateParams, postTitlesCats, postsHandler, $element) {
 	var nav = this;
 	nav.posts = postTitlesCats;
 	nav.categories = postsHandler.getCats(postTitlesCats);
@@ -584,168 +347,14 @@ function nav($stateParams, postTitlesCats, postsHandler) {
 			return $stateParams.catName == cat ? 'active' : '';
 		}
 	}
-}
-function postsView($stateParams, postTitlesCats, $scope, $rootScope, $animate, $timeout) {
-	var postsView = this;
-	postsView.currentCat = $stateParams.catName ? $stateParams.catName : 'index';
-	postsView.categories = _.uniq(_.pluck(postTitlesCats,'category'));
-	var catParam = $stateParams.catName ? $stateParams.catName.toLowerCase() : null;
-	if(!catParam){
-		postsView.posts = postTitlesCats;
-	}else{
-		postsView.posts = _.filter(postTitlesCats, function(post){
-			return post.category == catParam;
-		});
-	}
-	$scope.reverse = function(){
-		postsView.posts.reverse();
-	}
-	$scope.pop = function(){
-		postsView.posts.pop();
-	}
-	$scope.addClass = function(){
-		_.each(postsView.posts, function(p){
-			p.cust = 'bs'
-		})
-	}
-	$scope.removeClass = function(){
-		_.each(postsView.posts, function(p){
-			p.cust = ''
-		})
-	}
-   $scope.animationState = "OFF";
-    var currAnimationPromise = null;
-    $scope.onStartAnimationClick = function(){
-      var animatedBoxParent = document.querySelector("#animatedBoxParent");
-      if (animatedBoxParent !== null){
-        animatedBoxParent = angular.element(animatedBoxParent);
-        var animatedBox = angular.element("<div id=\"animatedBox\" class=\"box second cunt-js-animation\"></div>");
-        var animationStep1 = function(){
-          $scope.animationState = "In progress (step 1 - ENTER)...";
-          currAnimationPromise = $animate.enter(animatedBox, animatedBoxParent);
-
-          currAnimationPromise.then(
-            function(){
-                $timeout(animationStep2, 20);
-            }
-          );
-        };
-        var animationStep2 = function(){
-          $scope.animationState = "In progress (step 2 - ADD CLASS)...";
-          currAnimationPromise = $animate.addClass(animatedBox, "box-border");
-          currAnimationPromise.then(
-            function(){
-                $timeout(animationStep3, 20);
-            }
-          );
-        };
-        var animationStep3 = function(){
-          $scope.animationState = "In progress (step 3 - REMOVE CLASS)...";
-          currAnimationPromise = $animate.removeClass(animatedBox, "box-border");
-          currAnimationPromise.then(
-            function(){
-                $timeout(animationStep4, 20);
-            }
-          );
-        };
-        var animationStep4 = function(){
-          $scope.animationState = "In progress (step 4 - LEAVE)...";
-          currAnimationPromise = $animate.leave(animatedBox);
-          currAnimationPromise.then(
-            function(){
-                currAnimationPromise = null;
-                $scope.animationState = "ENDED";
-            }
-          );
-        };
-        animationStep1();
-      }
-    }
-}
-function singleView($scope, postTitlesCats, singlePost, $sce, $ocLazyLoad, Utility, postsHandler, $animate, $timeout, $rootScope) {
-	$rootScope.$on('$stateChangeStart', function(evt, toState, toParams, fromState, fromParams){
-		$scope.onStartAnimationClick();
-		//log('evt');log(evt);log('toState');log(toState);log('toParams');log(toParams);log('fromState');log(fromState);log('fromParams');log(fromParams);
-		});
-	var postsInCategoryOrder = _.filter(postTitlesCats, function(post){
-		var cat = postsHandler.getCategoryBySlug(postTitlesCats, singlePost.slug).category;
-		return post.category == cat;
-	});
-	var postIndex = _.indexOf(_.pluck(postsInCategoryOrder, 'title'), singlePost.title);
-	var singleView = this;
-	singleView.title = $sce.trustAsHtml(singlePost.title);
-	singleView.content = $sce.trustAsHtml(singlePost.content.extended);
-	singleView.image = singlePost.image ? singlePost.image.url : undefined;
-	singleView.template = $sce.trustAsHtml(singlePost.templates);
-	singleView.prev = Utility.getItem().getPrev(postsInCategoryOrder, postIndex);
-	singleView.next = Utility.getItem().getNext(postsInCategoryOrder, postIndex);
-	singleView.scriptUpload = singlePost.scriptUpload;
-	if (singleView.scriptUpload) {
-		var filesToLoad = _.map(singleView.scriptUpload, function(file) {
-			return 'data/' + file.filename;
-		})
-		$ocLazyLoad.load([{
-			files: filesToLoad,
-			cache: false
-		}]);
-	}
-	singleView.hasImage = function(postImage) {
-		return (postImage == undefined ? false : true)
-	}
-   $scope.animationState = "OFF";
-    var currAnimationPromise = null;
-    $scope.onStartAnimationClick = function(){
-      var animatedBoxParent = document.querySelector(".single-nav");
-      if (animatedBoxParent !== null){
-        animatedBoxParent = angular.element(animatedBoxParent);
-        var animatedBox = angular.element("<div id=\"animatedBox\" class=\"box cunt-js-animation\"></div>");
-        var animationStep1 = function(){
-          $scope.animationState = "In progress (step 1 - ENTER)...";
-          currAnimationPromise = $animate.enter(animatedBox, animatedBoxParent);
-
-          currAnimationPromise.then(
-            function(){
-                $timeout(animationStep2, 20);
-            }
-          );
-        };
-        var animationStep2 = function(){
-          $scope.animationState = "In progress (step 2 - ADD CLASS)...";
-          currAnimationPromise = $animate.addClass(animatedBox, "box-border");
-          currAnimationPromise.then(
-            function(){
-                $timeout(animationStep3, 20);
-            }
-          );
-        };
-        var animationStep3 = function(){
-          $scope.animationState = "In progress (step 3 - REMOVE CLASS)...";
-          currAnimationPromise = $animate.removeClass(animatedBox, "box-border");
-          currAnimationPromise.then(
-            function(){
-                $timeout(animationStep4, 20);
-            }
-          );
-        };
-        var animationStep4 = function(){
-          $scope.animationState = "In progress (step 4 - LEAVE)...";
-          currAnimationPromise = $animate.leave(animatedBox);
-          currAnimationPromise.then(
-            function(){
-                currAnimationPromise = null;
-                $scope.animationState = "ENDED";
-            }
-          );
-        };
-        animationStep1();
-      }
-    };
-    $scope.onCancelAnimationStepClick = function(){
-      if (currAnimationPromise !== null){
-        $animate.cancel(currAnimationPromise);
-        currAnimationPromise = null;
-      }
-    };
+  $scope.hover = function(cat){
+    log($scope)
+    // snabbt(, {
+    //   position: [400, 0, 100],
+    //   duration: 200,
+    //   easing: 'ease'
+    // });
+  }
 }
 function log(msg) {	console.log(msg)}
 })();
