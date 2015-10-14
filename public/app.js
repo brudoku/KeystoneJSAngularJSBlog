@@ -225,26 +225,42 @@ var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate'])
         });
         done();
     },
-    leave: function(element){
-      snabbt(elem, {
-        position: [0, 0, 0],
-        duration: 500,
-        easing: 'ease',
-        rotation: [Math.PI/2, 0, 0]
-      });
+    leave: function(){
+    }
+  }
+})
+.animation(".random", function ($timeout){
+  return {
+    enter: function (element, done){
+      // $(element).css('border','solid 1px red')
+       snabbt(element, {
+         fromPosition: function(i, count) {
+        return [0, -(count/2) * 5 + 5*i, i*0.001];
+      },
+      position: [10, 0, 0],
+      duration: 1000,
+      easing: 'ease'
+        });
+        done();
+    },
+    leave: function(){
     }
   }
 })
 .service('postAnim', function($animate){
   var currAnimationPromise = null;
-    var ngAnim = function(elem){
-      elem = angular.element(elem)
+  var animFunction = function(el){
+    var elem = angular.element(el);
+    var ngAnim = function(){
       currAnimationPromise = $animate.enter(elem, elem.parent());
-      // currAnimationPromise.then(function(){
+      currAnimationPromise.then(function(){
+        currAnimationPromise = $animate.leave(elem);
 
-      // })
-    }
-    return {a1: ngAnim}
+      })
+    }()
+    return ngAnim;
+  }
+  return {a1: animFunction}
 })
 .directive('catHover', function(){
   return {
@@ -276,7 +292,7 @@ var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate'])
   var stateData = {};
   var states = {
     'topView.posts': 'postsUI',
-    'topView.category': 'postsUI',
+    'topView.category': 'categoriesUI',
     'topView.single': 'singleUI'
   }
   $rootScope.$on('$stateChangeStart', function(evt, toState, toParams, fromState, fromParams){
@@ -294,7 +310,8 @@ var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate'])
 })
 function postsView(postTitlesCats, $scope, $animate, postAnim, rootService,  $stateParams, $rootScope) {
   $rootScope.$on('$stateChangeStart', function(evt, toState, toParams, fromState, fromParams){
-    var currentView  = '#' + rootService.getFromState();
+    // var currentView  = '#' + rootService.getFromState();
+    var currentView = '.left-nav'
     var animatedBox = document.querySelector(currentView);
     postAnim.a1(animatedBox);
   })
