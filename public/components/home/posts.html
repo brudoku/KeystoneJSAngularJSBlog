@@ -1,22 +1,9 @@
-<div id="postsUI" class="random">
+<div id="postsUI" class="single-view-next-post-anim">
 	<div class="post-list">
-		<!-- <li ng-repeat="post in postsView.posts" class="post {{post.category}}" ng-class="{'new-item':post.isCategorySelected,'remove-item': !post.isCategorySelected}"> -->
 		<li ng-repeat="post in postsView.posts" class="post animated-element {{post.category}} {{post.cust}}" >
 			<a href="#/{{post.slug}}/">
 				<span>{{post.title}}</span>
 			</a>
 		</li>
 	</div>
-
-	<button ng-click="reverse()">reverse</button>
-	<button ng-click="pop()">pop</button>
-	<button ng-click="addClass()">addClass</button>
-	<button ng-click="removeClass()">removeClass</button> 
-
-	<button ng-click="onStartAnimationClick()">Start anim</button>
-	<button ng-click="onCancelAnimationClick()">Cancel anim</button>
-
-
-	<p>animationState:{{animationState}}</p>
-	<div id="animatedBoxParent"></div>
 </div>
