@@ -23,7 +23,16 @@ var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate'])
 				postTitlesCats: function(PostsFactory) {
 					return PostsFactory.postCatFn();
 				}
-			}
+			},
+      onEnter: function(rootService, postAnim, $timeout){
+        log('enter cats')
+        var currentView  = '#postsUI';
+        // var animatedBox = document.querySelector(currentView);
+        // postAnim.a1(animatedBox)
+      },
+      onExit: function(){
+        log('exit cats')
+      }
 		})
 		.state('topView.category',{
 			url: '/category/:catName',
@@ -43,9 +52,13 @@ var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate'])
 				}
 			},
       onEnter: function(rootService, postAnim, $timeout){
-        var currentView  = '#' + rootService.getToState();
-        var animatedBox = document.querySelector(currentView);
+        log('enter cats')
+        var currentView  = '#postsUI';
+        // var animatedBox = document.querySelector(currentView);
         // postAnim.a1(animatedBox)
+      },
+      onExit: function(){
+        log('exit cats')
       }
 		})
 		.state('topView.single', {
@@ -301,23 +314,18 @@ var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate'])
     }
   }
 })
-function postsView($scope, postTitlesCats, postAnim, rootService,  $stateParams, $rootScope, $timeout) {
+function postsView($scope, postTitlesCats, postAnim, $stateParams, $rootScope, $timeout) {
   $rootScope.$on('$viewContentLoaded', function(evt, toState, toParams, fromState, fromParams){
-    var from = rootService.getFromState();
-    var to = rootService.getToState();
     var $currentView  = $('#postsUI');
     var postsView = document.getElementById('postsUI');
-    log('postsView 1')
+    log('postsView 1');
 
-    log(postsView)
+    log(postsView);
     postsView = angular.element(postsView);
-    log('postsView 2')
-    
-    log(postsView)
 
     $timeout(function() {
       $currentView.css('opacity', 1)
-      postAnim.a1(postsView);
+      // postAnim.a1(postsView);
     }, 10);
   });
   $rootScope.$on('$stateChangeStart', function(evt, toState, toParams, fromState, fromParams){
@@ -330,19 +338,17 @@ function postsView($scope, postTitlesCats, postAnim, rootService,  $stateParams,
   var catParam = $stateParams.catName ? $stateParams.catName.toLowerCase() : null;
   postsView.posts = !catParam ? postTitlesCats : _.filter(postTitlesCats, function(post){return post.category == catParam;});
 }
-function singleView($scope, postTitlesCats, singlePost, $sce, $ocLazyLoad, Utility, postsHandler, $timeout, $rootScope, postAnim, rootService) {
+function singleView($scope, postTitlesCats, singlePost, $sce, $ocLazyLoad, Utility, postsHandler, $timeout, $rootScope, postAnim) {
   $rootScope.$on('$viewContentLoaded', function(evt, toState, toParams, fromState, fromParams){
-    var from = rootService.getFromState();
-    var to = rootService.getToState();
     var $currentView  = $('#singleUI');
     $timeout(function() {
-          $currentView.css('opacity', 1)
+      $currentView.css('opacity', 1)
     }, 10);
-  })
+  });
   $rootScope.$on('$stateChangeStart', function(evt, toState, toParams, fromState, fromParams){
       var currentView  = '#singleUI';
       $(currentView).css('opacity', 0)
-  })
+  });
   var postsInCategoryOrder = _.filter(postTitlesCats, function(post){
     var cat = postsHandler.getCategoryBySlug(postTitlesCats, singlePost.slug).category;
     return post.category == cat;
