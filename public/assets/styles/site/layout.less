@@ -353,24 +353,20 @@ a.nav-cat.selected {
     opacity: 0;
   }
 }
-
 .animated-element-with-keyframes.ng-enter
 {
   -webkit-animation: blinkAndGrow 1.0s linear;
   animation: blinkAndGrow 1.0s linear;
 }
-
 .animated-element-with-keyframes.ng-leave
 {
   -webkit-animation: shrinkAndDisappear 0.8s linear;
   animation: shrinkAndDisappear 0.8s linear;
 }
-
 *
 {
   box-sizing: border-box;
 }
-
 .box
 {
   width: 100px;
@@ -384,24 +380,22 @@ a.nav-cat.selected {
 .box-border
 {
   border: 11px solid #808080;
-          // element.css({opacity: (i / 100)});
 }
-
 
 #animatedBoxParent{
 }
-
-
-
 #postsUI, #singleUI{
-	-webkit-transition: all 1500ms;
-	opacity: 0;
+	-webkit-transition: all 400ms;
+	// opacity: 0;
 }
-
 .opaque{
 	opacity: 1;
 }
-
 .ng-inline-animate{
 	border: solid 5px red
 }
+.single-ui, .post, .post-anim, .single-anim, .post-ui{
+	-webkit-transition: all 400ms;
+	position: relative;
+}
+#btn-move{}

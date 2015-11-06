@@ -1,5 +1,5 @@
 (function () {
-var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate'])
+ app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate'])
 .config(function config($stateProvider, $urlRouterProvider) {
 	$stateProvider
 		.state('topView',{
@@ -10,7 +10,7 @@ var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate'])
 		.state('topView.posts',{
 			url: '/',
 			views: {
-				'categories':{
+				'menu':{
 					templateUrl: '/components/home/categories.html',
 					controller: 'NavCtrl as nav'
 				},
@@ -24,20 +24,17 @@ var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate'])
 					return PostsFactory.postCatFn();
 				}
 			},
-      onEnter: function(rootService, postAnim, $timeout){
-        log('enter cats')
-        var currentView  = '#postsUI';
-        // var animatedBox = document.querySelector(currentView);
-        // postAnim.a1(animatedBox)
-      },
-      onExit: function(){
-        log('exit cats')
-      }
+			onEnter: function($timeout){
+				var currentView  = '#postsUI';
+				// var animatedBox = document.querySelector(currentView);
+			},
+			onExit: function(){
+			}
 		})
-		.state('topView.category',{
+		.state('topView.menu',{
 			url: '/category/:catName',
 			views: {
-				'categories':{
+				'menu':{
 					templateUrl: '/components/home/categories.html',
 					controller: 'NavCtrl as nav'
 				},
@@ -51,20 +48,17 @@ var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate'])
 					return PostsFactory.postCatFn();
 				}
 			},
-      onEnter: function(rootService, postAnim, $timeout){
-        log('enter cats')
-        var currentView  = '#postsUI';
-        // var animatedBox = document.querySelector(currentView);
-        // postAnim.a1(animatedBox)
-      },
-      onExit: function(){
-        log('exit cats')
-      }
+			onEnter: function($timeout){
+				var currentView  = '#postsUI';
+				// var animatedBox = document.querySelector(currentView);
+			},
+			onExit: function(){
+			}
 		})
 		.state('topView.single', {
 			url: "/:slug/",
 			views: {
-				'categories':{
+				'menu':{
 					templateUrl: '/components/home/categories.html',
 					controller: 'NavCtrl as nav',
 					controllerAs: 'nav'
@@ -81,16 +75,7 @@ var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate'])
 				postTitlesCats: function(PostsFactory){
 					return PostsFactory.postCatFn();
 				}
-			}/*,
-      onEnter: function(rootService, postAnim, $timeout){
-          var currentView  = '#singleUI';
-          var animatedBox = document.querySelector(currentView);
-          var $animatedBox = $(animatedBox);
-          
-          $animatedBox.addClass('opaque');
-          log($animatedBox);
-          $timeout(function(){$animatedBox.css('border','solid 1px green');},10);
-      }*/
+			}
 		})
 })
 .controller('NavCtrl', nav)
@@ -240,115 +225,112 @@ var app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate'])
 		});
 	}
 })
-.animation(".single-view-next-post-anim", function ($timeout){
+.animation(".post-anim", function ($timeout){
   return {
-    enter: function (element, done){
-      // $(element).css('border','solid 1px red')
-      log('anim enter single')
-       snabbt(element, {
-          position: [0, 0, 0],
-          duration: 200,
-          easing: 'ease',
-          rotation: [12, 0, 0]
-        });
-        done();
+    animate: function(element, done){
+      done();
     },
-    leave: function(){
-      log('leave')
+    enter: function (element, done){
+      var viewUI = $(element).find('.post');
+
+      viewUI.snabbt({
+        rotation: [Math.PI, Math.PI, Math.PI]
+        ,
+        opacity: 1
+        ,
+        fromOpacity: 0
+        ,
+        duration: 500
+      });
+      $timeout(function(){
+        done();
+      },1000)
+    },
+    leave: function(element, done){
+    	log(element)
+      var viewUI = $(element).find('.post');
+      viewUI.snabbt({
+        rotation: [Math.PI/2, 0, 0]
+        ,
+        opacity: 0
+        ,
+        fromOpacity: 1
+        ,
+        position: [100,0,0]
+        ,
+        
+         easing: 'spring',
+  springConstant: 0.3,
+  springDeceleration: 0.8,        
+        duration: 500
+      });
+      $timeout(function(){
+        done();
+      },1110)
     }
   }
 })
-.animation(".random", function ($timeout){
+.animation(".single-anim", function ($timeout){
   return {
-    enter: function (element, done){
-      // $(element).css('border','solid 1px red')
-      log('anim enter random')
-       snabbt(element, {
-        fromPosition: function(i, count) {
-          return [0, -(count/2) * 5 + 5*i, i*0.001];
-      },
-      position: [10, 0, 0],
-      duration: 1000,
-      easing: 'ease'
-        });
-        done();
+    animate: function(element, done){
+      done();
     },
-    leave: function(){
-    }
-  }
-})
-.service('postAnim', function($animate){
-  var currAnimationPromise = null;
-  var animFunction = function(el){
-    var elem = angular.element(el);
-    var ngAnim = function(){
-      currAnimationPromise = $animate.enter(elem, elem.parent());
-      currAnimationPromise.then(function(){
-        // currAnimationPromise = $animate.leave(elem);
+    enter: function (element, done){
+      var viewUI = $(element).find('.single-ui');
+
+      var links = $('.left-nav');
+
+      links.snabbt({
+		opacity: 1
+		,
+		rotation: [Math.PI,0,0]
+		,
+		fromOpacity: 0
+		,
+        duration: 100
+        ,
+         easing: 'spring',
+  springConstant: 0.3,
+  springDeceleration: 0.8
       })
-    }()
-    return ngAnim;
+
+      viewUI.snabbt({
+		opacity: 1
+		,
+		fromOpacity: 0
+		,
+        duration: 500
+      });
+      $timeout(function(){
+        done();
+      },700)
+    },
+    leave: function(element, done){
+      var viewUI = $(element).find('.single-ui');
+      viewUI.snabbt({
+		opacity: 0
+		,
+		fromOpacity: 1
+		,
+        duration: 500
+      });
+      $timeout(function(){
+        done();
+      },700)
+    }
   }
-  return {a1: animFunction}
 })
 .run(['$state', 'postsHandler', 'PostsFactory', function($state) {
   $state.go('topView.posts');
 }])
-.service('rootService', function($rootScope){
-  var stateData = {};
-  var states = {
-    'topView.posts': 'postsUI',
-    'topView.category': 'postsUI',
-    'topView.single': 'singleUI'
-  }
-  $rootScope.$on('$stateChangeStart', function(evt, toState, toParams, fromState, fromParams){
-    stateData.from = fromState.name,
-    stateData.to = toState.name;
-    });
-  return {
-    getFromState: function(){
-      return states[stateData.from]
-    },
-    getToState: function(){
-      return states[stateData.to]
-    }
-  }
-})
-function postsView($scope, postTitlesCats, postAnim, $stateParams, $rootScope, $timeout) {
-  $rootScope.$on('$viewContentLoaded', function(evt, toState, toParams, fromState, fromParams){
-    var $currentView  = $('#postsUI');
-    var postsView = document.getElementById('postsUI');
-    log('postsView 1');
-
-    log(postsView);
-    postsView = angular.element(postsView);
-
-    $timeout(function() {
-      $currentView.css('opacity', 1)
-      // postAnim.a1(postsView);
-    }, 10);
-  });
-  $rootScope.$on('$stateChangeStart', function(evt, toState, toParams, fromState, fromParams){
-      var currentView  = '#postsUI';
-      $(currentView).css('opacity', 0)
-  })
+function postsView($scope, postTitlesCats, $stateParams, $rootScope, $timeout) {
   var postsView = this;
   postsView.currentCat = $stateParams.catName ? $stateParams.catName : 'index';
   postsView.categories = _.uniq(_.pluck(postTitlesCats,'category'));
   var catParam = $stateParams.catName ? $stateParams.catName.toLowerCase() : null;
   postsView.posts = !catParam ? postTitlesCats : _.filter(postTitlesCats, function(post){return post.category == catParam;});
 }
-function singleView($scope, postTitlesCats, singlePost, $sce, $ocLazyLoad, Utility, postsHandler, $timeout, $rootScope, postAnim) {
-  $rootScope.$on('$viewContentLoaded', function(evt, toState, toParams, fromState, fromParams){
-    var $currentView  = $('#singleUI');
-    $timeout(function() {
-      $currentView.css('opacity', 1)
-    }, 10);
-  });
-  $rootScope.$on('$stateChangeStart', function(evt, toState, toParams, fromState, fromParams){
-      var currentView  = '#singleUI';
-      $(currentView).css('opacity', 0)
-  });
+function singleView($scope, postTitlesCats, singlePost, $sce, $ocLazyLoad, Utility, postsHandler, $timeout, $rootScope) {
   var postsInCategoryOrder = _.filter(postTitlesCats, function(post){
     var cat = postsHandler.getCategoryBySlug(postTitlesCats, singlePost.slug).category;
     return post.category == cat;

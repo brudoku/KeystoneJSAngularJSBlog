@@ -1,8 +1,5 @@
-<div id="catsUI" class="single-view-next-post-anim">
-	<div class="panel category-list">
-		<li ng-repeat="cat in nav.categories">
-			<a ui-sref="topView.category({ catName: cat })" ng-class="nav.isCategorySelected(cat)">{{cat}}</a>
-
-		</li>
-	</div>
+<div class="panel category-list">
+	<li ng-repeat="cat in nav.categories">
+		<a ui-sref="topView.menu({ catName: cat })" ng-class="nav.isCategorySelected(cat)">{{cat}}</a>
+	</li>
 </div>
