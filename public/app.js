@@ -31,7 +31,7 @@
 			onExit: function(){
 			}
 		})
-		.state('topView.menu',{
+		.state('topView.filterPosts',{
 			url: '/category/:catName',
 			views: {
 				'menu':{
@@ -175,7 +175,14 @@
 		postTitlesFn: getPostTitles
 	}
 })
-.service('Utility', function(){
+.service('Utility', function($rootScope){
+	var fromTo = {};
+	$rootScope.$on('$stateChangeStart',	function(evt, toState, toParams, fromState, fromParams){
+		fromTo.from = fromParams;
+		fromTo.toSingle = toParams.slug;
+		fromTo.fromCat = fromParams.catName;
+		fromTo.toCat = toParams.catName;
+	});
 	function getPrevNextItem(){
 		var nextItem = function(list, currentIndex, defaultValue) {
 			return getOrElse(list, currentIndex + 1, defaultValue);
@@ -212,7 +219,21 @@
 		}
 		return this;
 	}
-	return {getItem: getPrevNextItem}
+	function getSingleNavDirection(){
+		return fromTo;
+	}
+	var operations = function(){
+		this.isMovingRight = function(direction){
+		    return function(){
+		      return direction === 'right'
+		    }
+	  	}
+		this.posNeg = function(condition, value){
+			return condition.apply() ? value : -value;
+		}
+	  	return this
+	}
+	return {getItem: getPrevNextItem, getSingleNavDirection: getSingleNavDirection, operations: operations}
 })
 .service('postsHandler', function PostsHandler(){
 	var postsHandler = this;
@@ -225,98 +246,148 @@
 		});
 	}
 })
-.animation(".post-anim", function ($timeout){
+.animation(".post-anim", function ($timeout, Utility){
   return {
     animate: function(element, done){
       done();
     },
     enter: function (element, done){
-      var viewUI = $(element).find('.post');
+		var $viewUI = $(element).find('.post');
+		var categories = _.map($('.category-list li a'), function(item){
+			var $item = $(item);
+			return $item.data('cat-name')
+		});
+		var fromCatIndex;
+		var toCatIndex;
 
-      viewUI.snabbt({
-        rotation: [Math.PI, Math.PI, Math.PI]
-        ,
-        opacity: 1
-        ,
-        fromOpacity: 0
-        ,
-        duration: 500
-      });
+	  	
+		_.each(categories, function(item){
+			if(Utility.getSingleNavDirection().toCat && Utility.getSingleNavDirection().toCat == item){
+				toCatIndex = _.indexOf(categories,item);
+			}
+			if(Utility.getSingleNavDirection().fromCat && Utility.getSingleNavDirection().fromCat == item){
+				fromCatIndex = _.indexOf(categories,item);
+			}
+		})
+
+		// var goingRight = Utility.operations().isMovingRight(direction);
+	 //  	var posNeg = _.partial(Utility.operations().posNeg, goingRight);
+	  	
+		$viewUI.snabbt({
+			opacity: 1,
+			fromOpacity: 0,
+			duration: 200
+		});
+		$timeout(function(){
+			done();
+		},1000)
+    },
+    leave: function(element, done){
+      var $viewUI = $(element).find('.post');
+      $viewUI.snabbt({
+      	rotation: [0, 0, 0],
+        fromRotation: [0,Math.PI/2,0],
+        opacity: 0,
+        fromOpacity: 1,
+        scale: [0.1,0.1],
+        // position: [100,0,0],
+        duration: 200}
+       );
       $timeout(function(){
         done();
       },1000)
-    },
-    leave: function(element, done){
-    	log(element)
-      var viewUI = $(element).find('.post');
-      viewUI.snabbt({
-        rotation: [Math.PI/2, 0, 0]
-        ,
-        opacity: 0
-        ,
-        fromOpacity: 1
-        ,
-        position: [100,0,0]
-        ,
-        
-         easing: 'spring',
-  springConstant: 0.3,
-  springDeceleration: 0.8,        
-        duration: 500
-      });
-      $timeout(function(){
-        done();
-      },1110)
     }
   }
 })
-.animation(".single-anim", function ($timeout){
+.animation(".single-anim", function ($timeout, Utility){
   return {
-    animate: function(element, done){
-      done();
-    },
     enter: function (element, done){
-      var viewUI = $(element).find('.single-ui');
+      	var $viewUI = $(element).find('.single-ui');
+		var direction;
+		var distance = 100;
+		var links = $('.left-nav, .right-nav');
+      	var $leftNav = $(links[0]);
+      	var $rightNav = $(links[1]);
+		_.each(links, function(item){
+			var $item = $(item);
+			if(Utility.getSingleNavDirection().toSingle && Utility.getSingleNavDirection().toSingle == $item.data('slug')){
+				direction = $item.data('direction');
+			}
+		});
+		var goingRight = Utility.operations().isMovingRight(direction);
+	  	var posNeg = _.partial(Utility.operations().posNeg, goingRight);
 
-      var links = $('.left-nav');
+		/*
+		$leftNav.snabbt({
+			opacity: 1
+			,
+			fromOpacity: 0
+			,
+			duration: 200
+			,
+			fromScale: [0.1,0.1]
+			,
+			scale: [1,1]
+			,
+			position: [0,0,0]
+			,
+			fromPosition: [0,400,0]
 
-      links.snabbt({
-		opacity: 1
-		,
-		rotation: [Math.PI,0,0]
-		,
-		fromOpacity: 0
-		,
-        duration: 100
-        ,
-         easing: 'spring',
-  springConstant: 0.3,
-  springDeceleration: 0.8
-      })
+		});
+		$rightNav.snabbt({
+			opacity: 1
+			,
+			fromOpacity: 0
+			,
+			duration: 200
+			,
+			fromScale: [0.1,0.1]
+			,
+			scale: [1,1]
+			,
+			position: [0,0,0]
+			,
+			fromPosition: [0,400,0]
+		});*/
 
-      viewUI.snabbt({
-		opacity: 1
-		,
-		fromOpacity: 0
-		,
-        duration: 500
-      });
-      $timeout(function(){
-        done();
-      },700)
+		$viewUI.snabbt({
+			opacity: 1,
+			fromOpacity: 0,
+			duration: 200,
+			fromScale: [0.1,0.1],
+			scale: [1,1],
+			rotation: [0, posNeg(2*Math.PI), 0],
+			easing: 'easeOut',
+			fromPosition: [posNeg(distance),0,0],
+			position: [0,0,0]
+		});
+		$timeout(function(){
+		done();
+		},400)
+    },
+    addClass: function(element, className, done){
+
     },
     leave: function(element, done){
-      var viewUI = $(element).find('.single-ui');
-      viewUI.snabbt({
-		opacity: 0
-		,
-		fromOpacity: 1
-		,
-        duration: 500
-      });
-      $timeout(function(){
-        done();
-      },700)
+      	var $viewUI = $(element).find('.single-ui');
+      	var leftNav = $(element).find('.left-nav');
+      	var rightNav = $(element).find('.right-nav');
+		var direction;
+
+		$viewUI.snabbt({
+			opacity: 0,
+			fromOpacity: 1,
+			duration: 200,
+			scale: [0.5,0.5]
+				// 	,
+		  // easing: function(value) {
+		  //   return value + 0.3 * Math.sin(2*Math.PI * value);
+		  // }
+		  // ,			position: [posY,0,0]
+		});
+		$timeout(function(){
+		done();
+		},400)
     }
   }
 })
@@ -325,8 +396,8 @@
 }])
 function postsView($scope, postTitlesCats, $stateParams, $rootScope, $timeout) {
   var postsView = this;
-  postsView.currentCat = $stateParams.catName ? $stateParams.catName : 'index';
-  postsView.categories = _.uniq(_.pluck(postTitlesCats,'category'));
+  // postsView.currentCat = $stateParams.catName ? $stateParams.catName : 'index';
+  // postsView.categories = _.uniq(_.pluck(postTitlesCats,'category'));
   var catParam = $stateParams.catName ? $stateParams.catName.toLowerCase() : null;
   postsView.posts = !catParam ? postTitlesCats : _.filter(postTitlesCats, function(post){return post.category == catParam;});
 }

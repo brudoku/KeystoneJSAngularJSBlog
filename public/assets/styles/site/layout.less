@@ -1,5 +1,4 @@
 body{
-	background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iNSIgaGVpZ2h0PSI1IiBmaWxsPSIjZmZmIj48L3JlY3Q+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNjY2MiPjwvcmVjdD4KPC9zdmc+");
 	overflow-x: hidden;
 	font-family: 'Raleway', sans-serif;
 }
@@ -385,17 +384,29 @@ a.nav-cat.selected {
 #animatedBoxParent{
 }
 #postsUI, #singleUI{
-	-webkit-transition: all 400ms;
+	// -webkit-transition: all 400ms;
 	// opacity: 0;
-}
-.opaque{
-	opacity: 1;
 }
 .ng-inline-animate{
 	border: solid 5px red
 }
-.single-ui, .post, .post-anim, .single-anim, .post-ui{
+
+// .post,
+// .single-ui,
+// .cat-anim,
+.post-ui,
+.single-ui,
+.post-ui,
+{
 	-webkit-transition: all 400ms;
-	position: relative;
+	position: absolute;
+	width: 800px;
 }
 #btn-move{}
+
+.main-ui{
+	position: relative;
+}
+.position-absolute{
+	position: absolute;
+}

@@ -1,7 +1,7 @@
-<div class="single-ui">
+<div class="single-ui container">
 	<div class="single-nav">
-		<a class="left-nav {{singleView.prev.cat}}" href="#/{{singleView.prev.slug}}/"><span class="pull-left">&#60;&#60;{{singleView.prev.title}}</span></a>
-		<a class="right-nav {{singleViewnext.cat}}" href="#/{{singleView.next.slug}}/"><span class="pull-right">{{singleView.next.title}}&#62;&#62;</span></a>
+		<a class="left-nav {{singleView.prev.cat}}" data-direction="left" data-slug="{{singleView.prev.slug}}" href="#/{{singleView.prev.slug}}/"><span class="pull-left">&#60;&#60;{{singleView.prev.title}}</span></a>
+		<a class="right-nav {{singleView.next.cat}}" data-direction="right" data-slug="{{singleView.next.slug}}" href="#/{{singleView.next.slug}}/"><span class="pull-right">{{singleView.next.title}}&#62;&#62;</span></a>
 	</div>
 	<div class="single-content">
 		<h2 class=" {{singleView.category}}">{{singleView.title}}</h2>
