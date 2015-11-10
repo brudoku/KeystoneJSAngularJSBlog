@@ -219,7 +219,7 @@
 		}
 		return this;
 	}
-	function getSingleNavDirection(){
+	function getNavDirection(){
 		return fromTo;
 	}
 	var operations = function(){
@@ -231,9 +231,37 @@
 		this.posNeg = function(condition, value){
 			return condition.apply() ? value : -value;
 		}
+		this.getSingleDirection = function(){
+			var links = $('.left-nav, .right-nav');
+			var direction;
+			_.each(links, function(item){
+				var $item = $(item);
+				if(getNavDirection().toSingle && getNavDirection().toSingle == $item.data('slug')){
+					direction = $item.data('direction');
+				}
+			});
+			return direction
+		}
+		this.getCatDirection = function(){
+			var categories = _.map($('.category-list li a'), function(item){
+				var $item = $(item);
+				return $item.data('cat-name')
+			});
+			var fromCatIndex;
+			var toCatIndex;
+			_.each(categories, function(item){
+				if(getNavDirection().toCat && getNavDirection().toCat == item){
+					toCatIndex = _.indexOf(categories,item);
+				}
+				if(getNavDirection().fromCat && getNavDirection().fromCat == item){
+					fromCatIndex = _.indexOf(categories,item);
+				}
+			})
+			return toCatIndex > fromCatIndex ? 'right' : 'left';
+		}
 	  	return this
 	}
-	return {getItem: getPrevNextItem, getSingleNavDirection: getSingleNavDirection, operations: operations}
+	return {getItem: getPrevNextItem, getNavDirection: getNavDirection, operations: operations}
 })
 .service('postsHandler', function PostsHandler(){
 	var postsHandler = this;
@@ -252,113 +280,89 @@
       done();
     },
     enter: function (element, done){
-		var $viewUI = $(element).find('.post');
-		var categories = _.map($('.category-list li a'), function(item){
-			var $item = $(item);
-			return $item.data('cat-name')
-		});
-		var fromCatIndex;
-		var toCatIndex;
+		var $viewUI = $(element).find('.post-ui');
+		var goingRight = Utility.operations().isMovingRight(Utility.operations().getCatDirection());
+	  	var posNeg = _.partial(Utility.operations().posNeg, goingRight);
+	  	var distance = 100;
+	    $viewUI.css('z-index',100)
 
-	  	
-		_.each(categories, function(item){
-			if(Utility.getSingleNavDirection().toCat && Utility.getSingleNavDirection().toCat == item){
-				toCatIndex = _.indexOf(categories,item);
-			}
-			if(Utility.getSingleNavDirection().fromCat && Utility.getSingleNavDirection().fromCat == item){
-				fromCatIndex = _.indexOf(categories,item);
-			}
-		})
-
-		// var goingRight = Utility.operations().isMovingRight(direction);
-	 //  	var posNeg = _.partial(Utility.operations().posNeg, goingRight);
-	  	
 		$viewUI.snabbt({
+			easing:'easeOut',
 			opacity: 1,
 			fromOpacity: 0,
-			duration: 200
+			duration: 250,
+			fromPosition: [posNeg(distance),0,0],
+			position: [0,0,0]
+
 		});
 		$timeout(function(){
 			done();
-		},1000)
+		},500)
     },
     leave: function(element, done){
-      var $viewUI = $(element).find('.post');
-      $viewUI.snabbt({
-      	rotation: [0, 0, 0],
-        fromRotation: [0,Math.PI/2,0],
-        opacity: 0,
-        fromOpacity: 1,
-        scale: [0.1,0.1],
-        // position: [100,0,0],
-        duration: 200}
-       );
-      $timeout(function(){
-        done();
-      },1000)
+	    var $viewUI = $(element).find('.post-ui');
+	    $viewUI.css('z-index',0)
+		var goingRight = Utility.operations().isMovingRight(Utility.operations().getCatDirection());
+		var posNeg = _.partial(Utility.operations().posNeg, goingRight);
+	  	var distance = 100;
+
+		$viewUI.snabbt({
+			easing:'easeIn',
+			rotation: [0, 0, 0],
+			fromRotation: [-posNeg(Math.PI/2), -posNeg(Math.PI/2),-posNeg(Math.PI/2) ],
+			rotation: [0,0,0],
+			opacity: 0,
+			fromOpacity: 0.5,
+			scale: [0.1,0.1],
+			position: [-posNeg(distance),100,0],
+			duration: 250
+		}
+		);
+		$timeout(function(){
+		done();
+		},1000)
     }
   }
 })
 .animation(".single-anim", function ($timeout, Utility){
   return {
     enter: function (element, done){
-      	var $viewUI = $(element).find('.single-ui');
-		var direction;
 		var distance = 100;
-		var links = $('.left-nav, .right-nav');
-      	var $leftNav = $(links[0]);
-      	var $rightNav = $(links[1]);
-		_.each(links, function(item){
-			var $item = $(item);
-			if(Utility.getSingleNavDirection().toSingle && Utility.getSingleNavDirection().toSingle == $item.data('slug')){
-				direction = $item.data('direction');
-			}
-		});
-		var goingRight = Utility.operations().isMovingRight(direction);
+		var goingRight = Utility.operations().isMovingRight(Utility.operations().getSingleDirection());
 	  	var posNeg = _.partial(Utility.operations().posNeg, goingRight);
+      	var $viewUI = $(element).find('.single-ui');
+      	var $leftNav = $(element).find('.left-nav');
+      	var $rightNav = $(element).find('.right-nav');
 
-		/*
-		$leftNav.snabbt({
-			opacity: 1
-			,
-			fromOpacity: 0
-			,
-			duration: 200
-			,
-			fromScale: [0.1,0.1]
-			,
-			scale: [1,1]
-			,
-			position: [0,0,0]
-			,
-			fromPosition: [0,400,0]
+			$leftNav.snabbt({
+				opacity: 1,
+				fromOpacity: 0,
+				duration: 400,
+				fromScale: [0.1,0.1],
+				scale: [1,1],
+				position: [0,0,0],
+				fromPosition: [0,400,0]
 
-		});
-		$rightNav.snabbt({
-			opacity: 1
-			,
-			fromOpacity: 0
-			,
-			duration: 200
-			,
-			fromScale: [0.1,0.1]
-			,
-			scale: [1,1]
-			,
-			position: [0,0,0]
-			,
-			fromPosition: [0,400,0]
-		});*/
+			});
+			$rightNav.snabbt({
+				opacity: 1,
+				fromOpacity: 0,
+				duration: 400,
+				fromScale: [0.1,0.1],
+				scale: [1,1],
+				position: [0,0,0],
+				fromPosition: [0,400,0]
+			});
 
 		$viewUI.snabbt({
 			opacity: 1,
 			fromOpacity: 0,
 			duration: 200,
-			fromScale: [0.1,0.1],
+			fromScale: [0.6,0.6],
 			scale: [1,1],
-			rotation: [0, posNeg(2*Math.PI), 0],
-			easing: 'easeOut',
 			fromPosition: [posNeg(distance),0,0],
+			rotation: [posNeg(2*Math.PI), posNeg(2*Math.PI), posNeg(2*Math.PI)],
+			easing: 'easeOut',
 			position: [0,0,0]
 		});
 		$timeout(function(){
@@ -377,8 +381,8 @@
 		$viewUI.snabbt({
 			opacity: 0,
 			fromOpacity: 1,
-			duration: 200,
-			scale: [0.5,0.5]
+			duration: 200
+			// scale: [0.5,0.5]
 				// 	,
 		  // easing: function(value) {
 		  //   return value + 0.3 * Math.sin(2*Math.PI * value);
