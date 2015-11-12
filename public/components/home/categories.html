@@ -1,5 +1,9 @@
-<div class="panel category-list">
-	<li ng-repeat="cat in nav.categories">
-		<a ui-sref="topView.filterPosts({ catName: cat })" ng-class="nav.isCategorySelected(cat)" data-cat-name="{{cat}}">{{cat}}</a>
+<div class="panel cat-list">
+	<li ng-repeat="cat in nav.categories" ng-class="nav.isCategorySelected(cat)" class="{{cat}}">
+		<span class="bullet {{cat}}">
+			<span class="pointer">
+			</span>
+		</span>
+		<a ui-sref="topView.filterPosts({ catName: cat })" data-cat-name="{{cat}}">{{cat}}</a>
 	</li>
 </div>
