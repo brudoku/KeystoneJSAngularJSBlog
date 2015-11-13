@@ -419,9 +419,6 @@ function postsView($scope, postTitlesCats, $stateParams, $rootScope, $timeout) {
   var postsView = this;
   var catParam = $stateParams.catName ? $stateParams.catName.toLowerCase() : null;
   postsView.posts = !catParam ? postTitlesCats : _.filter(postTitlesCats, function(post){return post.category == catParam;});
-  $timeout(function(){
-  	$scope.isblah = true;
-  },2000)
 }
 function singleView($scope, postTitlesCats, singlePost, $sce, $ocLazyLoad, Utility, postsHandler, $timeout, $rootScope) {
   var postsInCategoryOrder = _.filter(postTitlesCats, function(post){
@@ -448,19 +445,21 @@ function singleView($scope, postTitlesCats, singlePost, $sce, $ocLazyLoad, Utili
     }]);
   }
 }
-function nav($scope, $stateParams, postTitlesCats, postsHandler, $element) {
+function nav($scope, $stateParams, postTitlesCats, postsHandler, $element, $timeout) {
 	var nav = this;
 	nav.posts = postTitlesCats;
 	nav.categories = postsHandler.getCats(postTitlesCats);
-	nav.isCategorySelected = function(cat){
-		var currentCat = '';
-		if($stateParams.slug){
-			currentCat = postsHandler.getCategoryBySlug(postTitlesCats, $stateParams.slug).category == cat ? 'active' : '';
-			return currentCat;
-		} else {
-			return $stateParams.catName == cat ? 'active' : '';
+	$timeout(function(){
+		nav.isCategorySelected = function(cat){
+			var currentCat = '';
+			if($stateParams.slug){
+				currentCat = postsHandler.getCategoryBySlug(postTitlesCats, $stateParams.slug).category == cat ? 'active' : '';
+				return currentCat;
+			} else {
+				return $stateParams.catName == cat ? 'active' : '';
+			}
 		}
-	}
+	},0)
 }
 function log(msg) {	console.log(msg)}
 })();

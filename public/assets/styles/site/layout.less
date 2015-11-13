@@ -130,9 +130,7 @@
 				font-size: 40px;
 				margin-left: 20px;
 				-webkit-transition: all @hoverAnim;
-				&.active {
-					text-decoration: underline;
-				}
+
 				&.code {
 					color: @code;
 					&:hover{
@@ -173,7 +171,7 @@
 			&.active {
 				span.bullet{
 				    -webkit-transform: rotate(90deg);
-					// border-color: @col;
+					border-color: @col;
 					// border: red solid 5px;
 					&.code {
 						border-color: @code !important;
@@ -185,6 +183,7 @@
 						border-color: @other !important;
 					}
 				}
+				// text-decoration: underline;
 			}
 		}
 	}
@@ -296,6 +295,7 @@
 	    padding: 5px;
 	    border: solid 2px @darkGrey;
 	    -webkit-transition: all @buttonAnim;
+	    // -webkit-transition-delay: 100ms;
 	    border-radius: 10px;
 	    margin-top: 22px;
 		&:hover {
