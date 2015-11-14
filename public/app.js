@@ -2,69 +2,62 @@
  app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate'])
 .config(function config($stateProvider, $urlRouterProvider) {
 	$stateProvider
-		.state('topView',{
-			abstract: true,
-			url: '',
-			templateUrl: '/components/home/main.html'
-		})
-		.state('topView.posts',{
-			url: '/',
-			views: {
-				'menu':{
-					templateUrl: '/components/home/categories.html',
-					controller: 'NavCtrl as nav'
-				},
-				'posts':{
-					templateUrl: '/components/home/posts.html',
-					controller: 'PostsViewCtrl as postsView'
-				}
-			},
+	.state('topView',{
+		url: '',
+		abstract: true,
+		templateUrl: '/components/home/main.html',
+			controller: 'NavCtrl as nav',
 			resolve: {
 				postTitlesCats: function(PostHelper) {
 					return PostHelper.postCatFn();
 				}
 			}
-		})
-		.state('topView.filterPosts',{
-			url: '/category/:catName',
-			views: {
-				'menu':{
-					templateUrl: '/components/home/categories.html',
-					controller: 'NavCtrl as nav'
-				},
-				'posts':{
-					templateUrl: '/components/home/posts.html',
-					controller: 'PostsViewCtrl as postsView'
-				}
-			},
-			resolve: {
-				postTitlesCats: function(PostHelper) {
-					return PostHelper.postCatFn();
-				}
+	})
+	.state('topView.posts',{
+		url: '/',
+		views: {
+			'posts':{
+				templateUrl: '/components/home/posts.html',
+				controller: 'PostsViewCtrl as postsView'
 			}
-		})
-		.state('topView.single', {
-			url: "/:slug/",
-			views: {
-				'menu':{
-					templateUrl: '/components/home/categories.html',
-					controller: 'NavCtrl as nav',
-					controllerAs: 'nav'
-				},
-				'single':{
-					templateUrl: '/components/single/singleView.html',
-					controller: 'SingleViewCtrl as singleView'
-				}
-			},
-			resolve: {
-				singlePost: function(PostHelper, $stateParams) {
-					 return PostHelper.singlePostFn($stateParams.slug);
-				},
-				postTitlesCats: function(PostHelper){
-					return PostHelper.postCatFn();
-				}
+		},
+		resolve: {
+			postTitlesCats: function(PostHelper) {
+				return PostHelper.postCatFn();
 			}
-		})
+		}
+	})
+	.state('topView.filterPosts',{
+		url: '/category/:catName',
+		views: {
+			'posts':{
+				templateUrl: '/components/home/posts.html',
+				controller: 'PostsViewCtrl as postsView'
+			}
+		},
+		resolve: {
+			postTitlesCats: function(PostHelper) {
+				return PostHelper.postCatFn();
+			}
+		}
+	})
+	.state('topView.single', {
+		url: "/:slug/",
+		views: {
+			'single':{
+				templateUrl: '/components/single/singleView.html',
+				controller: 'SingleViewCtrl as singleView'
+			}
+		},
+		resolve: {
+			singlePost: function(PostHelper, $stateParams) {
+				return PostHelper.singlePostFn($stateParams.slug);
+			},
+			postTitlesCats: function(PostHelper){
+				return PostHelper.postCatFn();
+			}
+		}
+	})
 })
 .controller('NavCtrl', nav)
 .controller('PostsViewCtrl', postsView)
@@ -93,8 +86,7 @@
 	var getSinglePost = function(postId){
 		return function(){
 				var deferred = $q.defer();
-				PostsAPI.singlePostFn(postId)
-					.then(function(singlePost){
+				PostsAPI.singlePostFn(postId).then(function(singlePost){
 						PostsAPI.catsFn().then(function(categories){
 							var postCat =  _.find(categories, function(cat){
 								return singlePost.categories[0] == cat._id;
@@ -163,14 +155,15 @@
 		postTitlesFn: getPostTitles
 	}
 })
-.service('Utility', function($rootScope){
+.service('Utility', function($rootScope, $state){
 	var fromTo = {};
 	$rootScope.$on('$stateChangeStart',	function(evt, toState, toParams, fromState, fromParams){
-		fromTo.from = fromParams;
+		fromTo.fromSingle = fromParams.single;
 		fromTo.toSingle = toParams.slug;
 		fromTo.fromCat = fromParams.catName;
 		fromTo.toCat = toParams.catName;
 	});
+
 	function getPrevNextItem(){
 		var nextItem = function(list, currentIndex, defaultValue) {
 			return getOrElse(list, currentIndex + 1, defaultValue);
@@ -412,8 +405,10 @@
     }
   }
 })
-.run(['$state', 'postsHandler', 'PostHelper', function($state) {
-  $state.go('topView.posts');
+.run(['$rootScope', '$state', function($rootScope, $state) {
+	//add state to rootscope so we know where we are on load
+	$rootScope.$state = $state;
+	$state.go('topView.posts');
 }])
 function postsView($scope, postTitlesCats, $stateParams, $rootScope, $timeout) {
   var postsView = this;
@@ -445,21 +440,20 @@ function singleView($scope, postTitlesCats, singlePost, $sce, $ocLazyLoad, Utili
     }]);
   }
 }
-function nav($scope, $stateParams, postTitlesCats, postsHandler, $element, $timeout) {
+function nav($scope, $rootScope, postTitlesCats, postsHandler) {
 	var nav = this;
 	nav.posts = postTitlesCats;
 	nav.categories = postsHandler.getCats(postTitlesCats);
-	$timeout(function(){
-		nav.isCategorySelected = function(cat){
-			var currentCat = '';
-			if($stateParams.slug){
-				currentCat = postsHandler.getCategoryBySlug(postTitlesCats, $stateParams.slug).category == cat ? 'active' : '';
-				return currentCat;
-			} else {
-				return $stateParams.catName == cat ? 'active' : '';
-			}
+	nav.isCategorySelected = function(cat){
+		var params = $rootScope.$state.params;
+		var ret = '';
+		if(params.slug){
+			ret = postsHandler.getCategoryBySlug(postTitlesCats, params.slug).category == cat ? 'active' : '';
+		} else {
+			ret = params.catName == cat ? 'active' : '';
 		}
-	},0)
+		return ret;
+	}
 }
 function log(msg) {	console.log(msg)}
 })();

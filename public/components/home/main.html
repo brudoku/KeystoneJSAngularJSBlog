@@ -1,3 +1,15 @@
-<ui-view class="cat-anim" name="menu"></ui-view>
+<ui-view class="cat-anim" name="menu">
+	<div class="panel cat-list">
+		<li ng-repeat="cat in nav.categories" ng-class="nav.isCategorySelected(cat)" class="{{cat}}">
+			<span class="bullet {{cat}}">
+				<span class="pointer">
+				</span>
+			</span>
+			<a ui-sref="topView.filterPosts({ catName: cat })" data-cat-name="{{cat}}">{{cat}}</a>
+		</li>
+	</div>
+</ui-view>
+
+
 <ui-view class="post-anim" name="posts"></ui-view>
 <ui-view class="single-anim" name="single"></ui-view>
