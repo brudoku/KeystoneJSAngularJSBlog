@@ -5,6 +5,7 @@
 	.state('topView',{
 		url: '',
 		abstract: true,
+		reload: false,
 		templateUrl: '/components/home/main.html',
 			controller: 'NavCtrl as nav',
 			resolve: {
@@ -181,15 +182,16 @@
 			return {
 				title: '',
 				slug: '',
-				cat: '',
+				category: '',
 				empty: true
 			}
 		}
 		var getProps = function(post) {
+			log(post)
 			return {
 				title: post.title,
 				slug: post.slug,
-				cat: post.cat
+				cat: post.category
 			}
 		}
 		this.getPrev = function(postData, pId){
@@ -334,21 +336,16 @@
       	var $viewUI = $(element).find('.single-ui');
       	var $leftNav = $(element).find('.left-nav');
       	var $rightNav = $(element).find('.right-nav');
+      	var navAnim = {
+			opacity: 1,
+			fromOpacity: 0,
+			duration: 400,
+			fromScale: [0.4,0.4],
+			scale: [1,1]
+		};
 
-		$leftNav.snabbt({
-			opacity: 1,
-			fromOpacity: 0,
-			duration: 400,
-			fromScale: [0.4,0.4],
-			scale: [1,1]
-		});
-		$rightNav.snabbt({
-			opacity: 1,
-			fromOpacity: 0,
-			duration: 400,
-			fromScale: [0.4,0.4],
-			scale: [1,1]
-		});
+		$leftNav.snabbt(navAnim);
+		$rightNav.snabbt(navAnim);
 
 		$viewUI.snabbt({
 			opacity: 1,
@@ -361,8 +358,9 @@
 			easing: 'easeIn',
 			position: [0,0,0]
 		});
+
 		$timeout(function(){
-		done();
+			done();
 		},400)
     },
     leave: function(element, done){
@@ -406,39 +404,49 @@
   }
 })
 .run(['$rootScope', '$state', function($rootScope, $state) {
-	//add state to rootscope so we know where we are on load
+	//add state to rootscope for access to state
 	$rootScope.$state = $state;
 	$state.go('topView.posts');
 }])
 function postsView($scope, postTitlesCats, $stateParams, $rootScope, $timeout) {
-  var postsView = this;
-  var catParam = $stateParams.catName ? $stateParams.catName.toLowerCase() : null;
-  postsView.posts = !catParam ? postTitlesCats : _.filter(postTitlesCats, function(post){return post.category == catParam;});
+	var postsView = this;
+	var catParam = $stateParams.catName ? $stateParams.catName.toLowerCase() : null;
+	postsView.posts = !catParam ? postTitlesCats : _.filter(postTitlesCats, function(post){return post.category == catParam;});
 }
 function singleView($scope, postTitlesCats, singlePost, $sce, $ocLazyLoad, Utility, postsHandler, $timeout, $rootScope) {
-  var postsInCategoryOrder = _.filter(postTitlesCats, function(post){
-    var cat = postsHandler.getCategoryBySlug(postTitlesCats, singlePost.slug).category;
-    return post.category == cat;
-  });
-  var postIndex = _.indexOf(_.pluck(postsInCategoryOrder, 'title'), singlePost.title);
-  var singleView = this;
-  singleView.hasImage = function(postImage) {return (postImage == undefined ? false : true)}
-  singleView.title = $sce.trustAsHtml(singlePost.title);
-  singleView.content = $sce.trustAsHtml(singlePost.content.extended);
-  singleView.image = singlePost.image ? singlePost.image.url : undefined;
-  singleView.template = $sce.trustAsHtml(singlePost.templates);
-  singleView.prev = Utility.getItem().getPrev(postsInCategoryOrder, postIndex);
-  singleView.next = Utility.getItem().getNext(postsInCategoryOrder, postIndex);
-  singleView.scriptUpload = singlePost.scriptUpload;
-  if (singleView.scriptUpload) {
-    var filesToLoad = _.map(singleView.scriptUpload, function(file) {
-      return 'data/' + file.filename;
-    })
-    $ocLazyLoad.load([{
-      files: filesToLoad,
-      cache: false
-    }]);
-  }
+	var singleView = this;
+	singleView.title = $sce.trustAsHtml(singlePost.title);
+	singleView.content = $sce.trustAsHtml(singlePost.content.extended);
+	singleView.image = singlePost.image ? singlePost.image.url : undefined;
+	singleView.hasImage = function(postImage) {return (postImage == undefined ? false : true)};
+	singleView.scriptUpload = singlePost.scriptUpload;
+	if (singleView.scriptUpload) {
+		var filesToLoad = _.map(singleView.scriptUpload, function(file) {
+	  		return 'data/' + file.filename;
+		})
+		$ocLazyLoad.load([{
+		  	files: filesToLoad,
+		  	cache: false
+		}]);
+	}
+	var postsInCategoryOrder = _.filter(postTitlesCats, function(post){
+		var cat = postsHandler.getCategoryBySlug(postTitlesCats, singlePost.slug).category;
+		return post.category == cat;
+	});
+	// $scope.browseByCat = false;
+	$scope.browseBy = function() {
+		$scope.browseByCat = $scope.browseByCat === false ? true: false;
+		var postOrder = $scope.browseByCat ? postTitlesCats : postsInCategoryOrder;
+		$scope.browsingBy = $scope.browseByCat ? 'date' : 'category';
+		updateLinks(postOrder);
+	}
+	var updateLinks = function(posts){
+		var postIndex = _.indexOf(_.pluck(posts, 'title'), singlePost.title);
+		singleView.prev = Utility.getItem().getPrev(posts, postIndex);
+		singleView.next = Utility.getItem().getNext(posts, postIndex);
+	}
+	updateLinks(postTitlesCats);
+	$scope.browseBy();
 }
 function nav($scope, $rootScope, postTitlesCats, postsHandler) {
 	var nav = this;
