@@ -187,7 +187,6 @@
 			}
 		}
 		var getProps = function(post) {
-			log(post)
 			return {
 				title: post.title,
 				slug: post.slug,
@@ -407,6 +406,8 @@
 	//add state to rootscope for access to state
 	$rootScope.$state = $state;
 	$state.go('topView.posts');
+	log('test')
+
 }])
 function postsView($scope, postTitlesCats, $stateParams, $rootScope, $timeout) {
 	var postsView = this;
