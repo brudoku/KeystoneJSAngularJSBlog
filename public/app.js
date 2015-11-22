@@ -405,9 +405,9 @@
 .run(['$rootScope', '$state', function($rootScope, $state) {
 	//add state to rootscope for access to state
 	$rootScope.$state = $state;
+	$rootScope.browseByCat = true;
+	$rootScope.browsingBy = $rootScope.browseByCat ? 'date' : 'category';
 	$state.go('topView.posts');
-	log('test')
-
 }])
 function postsView($scope, postTitlesCats, $stateParams, $rootScope, $timeout) {
 	var postsView = this;
@@ -434,20 +434,19 @@ function singleView($scope, postTitlesCats, singlePost, $sce, $ocLazyLoad, Utili
 		var cat = postsHandler.getCategoryBySlug(postTitlesCats, singlePost.slug).category;
 		return post.category == cat;
 	});
-	// $scope.browseByCat = false;
 	$scope.browseBy = function() {
-		$scope.browseByCat = $scope.browseByCat === false ? true: false;
-		var postOrder = $scope.browseByCat ? postTitlesCats : postsInCategoryOrder;
-		$scope.browsingBy = $scope.browseByCat ? 'date' : 'category';
-		updateLinks(postOrder);
+		$rootScope.browseByCat = $rootScope.browseByCat === false ? true : false;
+		$scope.postOrder = $rootScope.browseByCat ? postTitlesCats : postsInCategoryOrder;
+		$rootScope.browsingBy = $rootScope.browseByCat ? 'date' : 'category';
+		updateLinks($scope.postOrder);
 	}
 	var updateLinks = function(posts){
 		var postIndex = _.indexOf(_.pluck(posts, 'title'), singlePost.title);
 		singleView.prev = Utility.getItem().getPrev(posts, postIndex);
 		singleView.next = Utility.getItem().getNext(posts, postIndex);
 	}
-	updateLinks(postTitlesCats);
-	$scope.browseBy();
+	$scope.postOrder = $rootScope.browseByCat ? postTitlesCats : postsInCategoryOrder;
+	updateLinks($scope.postOrder);
 }
 function nav($scope, $rootScope, postTitlesCats, postsHandler) {
 	var nav = this;
