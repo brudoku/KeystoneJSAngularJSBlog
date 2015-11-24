@@ -1,5 +1,5 @@
-<div class="single-ui container">
-	<div class="panel controls">
+<div class="single-ui">
+	<div class="controls">
 		<p>Browse by <span ng-bind="browsingBy"></span></p>
   		<div class="onoffswitch">
 		    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox"
@@ -9,16 +9,18 @@
 		        <span class="onoffswitch-switch"></span>
 		    </label>
 		</div>
- 
-<!-- 	<div class="switch">
-		<input id="cmn-toggle-1" class="cmn-toggle cmn-toggle-round" type="checkbox" ng-click="browseBy()" ng-model="$rootScope.browseByCat" ng-checked="$root.browseByCat">
-		<label for="cmn-toggle-1"></label>
-	</div> -->
+
+	<!--
+		<div class="switch">
+			<input id="cmn-toggle-1" class="cmn-toggle cmn-toggle-round" type="checkbox" ng-click="browseBy()" ng-model="$rootScope.browseByCat" ng-checked="$root.browseByCat">
+			<label for="cmn-toggle-1"></label>
+		</div>
+	-->
 
 	</div>
 	<div class="single-nav">
-		<a class="left-nav {{singleView.prev.cat}}" data-direction="left" data-slug="{{singleView.prev.slug}}" href="#/{{singleView.prev.slug}}/"><span class="pull-left">&#60;&#60;{{singleView.prev.title}}</span></a>
-		<a class="right-nav {{singleView.next.cat}}" data-direction="right" data-slug="{{singleView.next.slug}}" href="#/{{singleView.next.slug}}/"><span class="pull-right">{{singleView.next.title}}&#62;&#62;</span></a>
+		<a class="left-nav {{singleView.prev.cat}}" data-direction="left" data-slug="{{singleView.prev.slug}}" href="#/{{singleView.prev.slug}}/"><span class="pull-left">{{singleView.prev.title}}</span></a>
+		<a class="right-nav {{singleView.next.cat}}" data-direction="right" data-slug="{{singleView.next.slug}}" href="#/{{singleView.next.slug}}/"><span class="pull-right">{{singleView.next.title}}</span></a>
 	</div>
 	<div class="single-content">
 		<h2 class=" {{singleView.category}}">{{singleView.title}}</h2>

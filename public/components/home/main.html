@@ -1,4 +1,4 @@
-<ui-view class="cat-anim" name="menu">
+<ui-view class="cat-anim row" name="menu">
 	<div class="panel cat-list">
 		<li ng-repeat="cat in nav.categories" ng-class="nav.isCategorySelected(cat)" class="{{cat}}">
 			<span class="bullet {{cat}}">
@@ -9,7 +9,6 @@
 		</li>
 	</div>
 </ui-view>
-
 
 <ui-view class="post-anim" name="posts"></ui-view>
 <ui-view class="single-anim" name="single"></ui-view>
