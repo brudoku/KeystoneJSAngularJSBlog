@@ -1,29 +1,14 @@
 <div class="single-ui">
 	<div class="controls">
-		<p>Browse by <span ng-bind="browsingBy"></span></p>
-  		<div class="onoffswitch">
-		    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox"
-		    id="browseBySwitch" ng-click="browseBy()" ng-model="$rootScope.browseByCat" ng-checked="$root.browseByCat">
-		    <label class="onoffswitch-label" for="browseBySwitch">
-		        <span class="onoffswitch-inner"></span>
-		        <span class="onoffswitch-switch"></span>
-		    </label>
-		</div>
-
-	<!--
-		<div class="switch">
-			<input id="cmn-toggle-1" class="cmn-toggle cmn-toggle-round" type="checkbox" ng-click="browseBy()" ng-model="$rootScope.browseByCat" ng-checked="$root.browseByCat">
-			<label for="cmn-toggle-1"></label>
-		</div>
-	-->
-
+		<input id="browseBy" ng-click="browseBy()" ng-model="$rootScope.browseByCat" ng-checked="$root.browseByCat"class="toggle toggle-yes-no" type="checkbox" checked>
+		<label for="browseBy" data-on="Date" data-off="Category"></label>
 	</div>
 	<div class="single-nav">
-		<a class="left-nav {{singleView.prev.cat}}" data-direction="left" data-slug="{{singleView.prev.slug}}" href="#/{{singleView.prev.slug}}/"><span class="pull-left">{{singleView.prev.title}}</span></a>
-		<a class="right-nav {{singleView.next.cat}}" data-direction="right" data-slug="{{singleView.next.slug}}" href="#/{{singleView.next.slug}}/"><span class="pull-right">{{singleView.next.title}}</span></a>
+		<a class="left-nav {{singleView.prev.cat}} nav-anim" data-direction="left" data-slug="{{singleView.prev.slug}}" href="#/{{singleView.prev.slug}}/"><span class="pull-left">{{singleView.prev.title}}</span></a>
+		<a class="right-nav {{singleView.next.cat}} nav-anim" data-direction="right" data-slug="{{singleView.next.slug}}" href="#/{{singleView.next.slug}}/"><span class="pull-right">{{singleView.next.title}}</span></a>
 	</div>
 	<div class="single-content">
-		<h2 class=" {{singleView.category}}">{{singleView.title}}</h2>
+		<h2 class="{{singleView.cat}}">{{singleView.title}}</h2>
 		<p ng-bind-html="singleView.content"></p>
 		<div ng-if="singleView.hasImage(image)">
 			<img ng-src="{{singleView.image}}" />

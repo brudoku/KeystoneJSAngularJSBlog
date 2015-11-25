@@ -78,7 +78,7 @@
 							var clone = _.clone(post);
 						return _.extend(clone, {isCategorySelected: true, category: catName});
 					});
-					$timeout(function(){ deferred.resolve(postsCats)}, 500);
+					$timeout(function(){ deferred.resolve(postsCats)}, 100);
 				});
 			});
 			return deferred.promise;
@@ -92,6 +92,8 @@
 							var postCat =  _.find(categories, function(cat){
 								return singlePost.categories[0] == cat._id;
 							});
+							singlePost.cat = postCat.name;
+							log(singlePost);
 							deferred.resolve(singlePost);
 						})
 					})
@@ -256,6 +258,13 @@
 		});
 	}
 })
+.animation(".nav-anim", function ($timeout, Utility){
+	return {
+		enter: function(element){
+			log(element);
+		}
+	}
+})
 .animation(".post-anim", function ($timeout, Utility){
   return {
     enter: function (element, done){
@@ -418,6 +427,7 @@ function singleView($scope, postTitlesCats, singlePost, $sce, $ocLazyLoad, Utili
 	var singleView = this;
 	singleView.title = $sce.trustAsHtml(singlePost.title);
 	singleView.content = $sce.trustAsHtml(singlePost.content.extended);
+	singleView.cat = $sce.trustAsHtml(singlePost.cat);
 	singleView.image = singlePost.image ? singlePost.image.url : undefined;
 	singleView.hasImage = function(postImage) {return (postImage == undefined ? false : true)};
 	singleView.scriptUpload = singlePost.scriptUpload;
