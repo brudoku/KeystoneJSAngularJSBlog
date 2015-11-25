@@ -142,7 +142,7 @@
 		display: inline-block;
 		li {
 			position: relative;
-			display: block;
+			display: inline-block;
 			list-style-type: none;
 		 	margin: 0px 0px;
 		    padding: 0px 8px 0px 0px;
@@ -157,6 +157,8 @@
 				margin-left: 15px;
 				-webkit-transition: all @hoverAnim;
 				-moz-transition: all @hoverAnim;
+				-o-transition: all @hoverAnim;
+				transition: all @hoverAnim;
 				@media(min-width: 480px){
 					font-size: 28px;
 					margin-left: 25px;
@@ -168,6 +170,8 @@
 					&:hover{
 					    // -webkit-transform: rotate(90deg);
 					    -moz-transform: rotate(90deg);
+					    -o-transform: rotate(90deg);
+					    transform: rotate(90deg);
 						border-color: @code !important;
 					}
 				}
@@ -182,6 +186,8 @@
 			&:hover span.bullet{
 			    -webkit-transform: rotate(90deg);
 			    -moz-transform: rotate(90deg);
+			    -o-transform: rotate(90deg);
+			    transform: rotate(90deg);
 				// border-color: @col;
 				// border: red solid 5px;
 				&.code {
@@ -198,6 +204,8 @@
 				span.bullet{
 				    -webkit-transform: rotate(90deg);
 				    -moz-transform: rotate(90deg);
+				    -o-transform: rotate(90deg);
+				    transform: rotate(90deg);
 					border-color: @col;
 					&.code {
 						border-color: @code !important;
@@ -301,10 +309,14 @@
 		border: solid 1px #333;
 		-webkit-transition: all 300ms;
 		-moz-transition: all 300ms;
+		-o-transition: all 300ms;
+		transition: all 300ms;
 		border-radius: 10px;
 		margin-top: 10px;
 		-webkit-backface-visibility: hidden;
 		-moz-backface-visibility: hidden;
+		-o-backface-visibility: hidden;
+		backface-visibility: hidden;
 		@media(min-width: 480px){
 			width: 15px;
 			height: 15px;
@@ -323,6 +335,8 @@
 			position: absolute;
 		    -webkit-transform: rotate(90deg);
 		    -moz-transform: rotate(90deg);
+		    -o-transform: rotate(90deg);
+		    transform: rotate(90deg);
 			@media(min-width: 480px){
 				width: 11px;
 				height: 2px;

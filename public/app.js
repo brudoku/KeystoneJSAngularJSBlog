@@ -93,7 +93,7 @@
 								return singlePost.categories[0] == cat._id;
 							});
 							singlePost.cat = postCat.name;
-							log(singlePost);
+							(singlePost);
 							deferred.resolve(singlePost);
 						})
 					})
@@ -258,31 +258,22 @@
 		});
 	}
 })
-.animation(".nav-anim", function ($timeout, Utility){
-	return {
-		enter: function(element){
-			log(element);
-		}
-	}
-})
 .animation(".post-anim", function ($timeout, Utility){
   return {
     enter: function (element, done){
+    	log('post-anim');
 		var $viewUI = $(element).find('.post-ui');
 		var goingRight = Utility.operations().isMovingRight(Utility.operations().getCatDirection());
 	  	var posNeg = _.partial(Utility.operations().posNeg, goingRight);
 	  	var distance = 50;
-	    $viewUI.css('z-index',100)
-
+	    $viewUI.css('z-index',100);
 		$viewUI.snabbt({
 			easing:'easeIn',
 			opacity: 1,
 			fromOpacity: 0,
-			// fromPosition: [posNeg(distance),0,0],
 			fromPosition: [0,distance,0],
 			position: [0,0,0],
 			duration: 250
-
 		});
 		$timeout(function(){
 			done();
@@ -290,23 +281,19 @@
     },
     leave: function(element, done){
 	    var $viewUI = $(element).find('.post-ui');
-	    $viewUI.css('z-index',0)
+	    $viewUI.css('z-index',0);
 		var goingRight = Utility.operations().isMovingRight(Utility.operations().getCatDirection());
 		var posNeg = _.partial(Utility.operations().posNeg, goingRight);
 	  	var distance = 100;
-
 		$viewUI.snabbt({
 			easing:'easeIn',
 			rotation: [0, 0, 0],
-			// fromRotation: [-posNeg(Math.PI/2), -posNeg(Math.PI/2),-posNeg(Math.PI/2) ],
 			rotation: [0,0,0],
 			opacity: 0,
 			fromOpacity: 0.5,
-			// scale: [0.1,0.1],
 			position: [0,distance,0],
 			duration: 250
-		}
-		);
+		});
 		$timeout(function(){
 		done();
 		},1000)
@@ -316,16 +303,19 @@
 .animation(".main-ui", function ($timeout, Utility){
   return {
     enter: function (element, done){
-		var $viewUI = $(element);
+    	log('main-ui');
+		var $viewUI = $(element).find('.post');
 	  	var distance = 100;
-		$viewUI.snabbt({
-			easing:'easeOut',
-			opacity: 1,
-			fromOpacity: 0,
-			duration: 500,
-			fromPosition: [distance,0,0],
-			position: [0,0,0]
-		});
+	  	_.each($viewUI, function(el, index){
+	  		var $el = $(el);
+	  		var delay = (100 * index);
+	  		$el.css('opacity', 0)
+	  			.css('transform', 'rotateX(-90deg)');
+	  		$timeout(function(){
+	  			$el.css('opacity', 1);
+	  			$el.css('transform', 'rotateX(0deg)');
+	  		}, delay);
+	  	})
 		$timeout(function(){
 			done();
 		},500)
@@ -351,10 +341,8 @@
 			fromScale: [0.4,0.4],
 			scale: [1,1]
 		};
-
 		$leftNav.snabbt(navAnim);
 		$rightNav.snabbt(navAnim);
-
 		$viewUI.snabbt({
 			opacity: 1,
 			fromOpacity: 0,
@@ -366,7 +354,6 @@
 			easing: 'easeIn',
 			position: [0,0,0]
 		});
-
 		$timeout(function(){
 			done();
 		},400)
@@ -378,7 +365,6 @@
       	var $viewUI = $(element).find('.single-ui');
       	var $leftNav = $(element).find('.left-nav');
       	var $rightNav = $(element).find('.right-nav');
-
 		$leftNav.snabbt({
 			opacity: 0,
 			fromOpacity: 1,
@@ -393,7 +379,6 @@
 			fromScale: [1,1],
 			scale: [0.3,0.3]
 		});
-
 		$viewUI.snabbt({
 			opacity: 0,
 			fromOpacity: 1,
@@ -406,8 +391,8 @@
 			position: [0,0,0]
 		});
 		$timeout(function(){
-		done();
-		},400)
+			done();
+		},400);
     }
   }
 })
