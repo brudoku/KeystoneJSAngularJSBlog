@@ -1,5 +1,5 @@
 <div class="post-list post-UI">
-	<li ng-repeat="post in postsView.posts" class="post {{post.category}}">
+	<li ng-repeat="post in postsView.posts" class="post {{post.category}}" ng-mouseover="showCat(post.category)" ng-mouseleave="hideCat(post.category)">
 		<a href="#/{{post.slug}}/">
 			<span class="title">{{post.title}}</span>
 		</a>

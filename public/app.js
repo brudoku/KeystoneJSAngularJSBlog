@@ -43,7 +43,7 @@
 		}
 	})
 	.state('topView.single', {
-		url: "/:slug/",
+		url: '/:slug/',
 		views: {
 			'single':{
 				templateUrl: '/components/single/singleView.html',
@@ -65,6 +65,25 @@
 .controller('SingleViewCtrl', singleView)
 .factory('PostsCache', function($cacheFactory){
 	return $cacheFactory('cachedPosts')
+})
+.factory('hoverHighlightService', function($rootScope){
+	var shared = {};
+	shared.message = '';
+	shared.menuActive = function(msg){
+		this.message = msg;
+		this.broadcastActive();
+	}
+	shared.broadcastActive = function(){
+		$rootScope.$broadcast('broadcastActive');
+	}
+	shared.menuInactive = function(msg){
+		this.message = msg;
+		this.broadcastInactive();
+	}
+	shared.broadcastInactive = function(){
+		$rootScope.$broadcast('broadcastInactive');
+	}	
+	return shared;
 })
 .service('PostHelper', function(PostsAPI, $q, PostsCache, $timeout) {
 	var getPostTitlesAndCat = function(){
@@ -258,10 +277,9 @@
 		});
 	}
 })
-.animation(".post-anim", function ($timeout, Utility){
+.animation('.post-anim', function ($timeout, Utility){
   return {
     enter: function (element, done){
-    	log('post-anim');
 		var $viewUI = $(element).find('.post-ui');
 		var goingRight = Utility.operations().isMovingRight(Utility.operations().getCatDirection());
 	  	var posNeg = _.partial(Utility.operations().posNeg, goingRight);
@@ -300,13 +318,12 @@
     }
   }
 })
-.animation(".main-ui", function ($timeout, Utility){
+.animation('.main-ui', function ($timeout, Utility){
   return {
     enter: function (element, done){
-    	log('main-ui');
-		var $viewUI = $(element).find('.post');
+		var $posts = $(element).find('.post');
 	  	var distance = 100;
-	  	_.each($viewUI, function(el, index){
+	  	_.each($posts, function(el, index){
 	  		var $el = $(el);
 	  		var delay = (100 * index);
 	  		$el.css('opacity', 0)
@@ -325,7 +342,7 @@
     }
   }
 })
-.animation(".single-anim", function ($timeout, Utility){
+.animation('.single-anim', function ($timeout, Utility){
   return {
     enter: function (element, done){
 		var distance = 100;
@@ -396,6 +413,28 @@
     }
   }
 })
+.directive('highlightCategories', function(hoverHighlightService,$timeout){
+	return {
+        restrict: 'A',
+        scope: {},
+		link: function(scope, elem, attrs){
+			$timeout(function(){
+				var $cats = $(elem);
+				var getCatElem = function(cat){
+					return $cats.find('.'+cat).first();
+				}
+				scope.$on('broadcastActive', function(){
+					var $elem = getCatElem(hoverHighlightService.message);
+					$elem.addClass('active');
+				});
+				scope.$on('broadcastInactive', function(){
+					var $elem = getCatElem(hoverHighlightService.message);
+					$elem.removeClass('active');
+				});
+			},0);
+		}
+	}
+})
 .run(['$rootScope', '$state', function($rootScope, $state) {
 	//add state to rootscope for access to state
 	$rootScope.$state = $state;
@@ -403,10 +442,16 @@
 	$rootScope.browsingBy = $rootScope.browseByCat ? 'date' : 'category';
 	$state.go('topView.posts');
 }])
-function postsView($scope, postTitlesCats, $stateParams, $rootScope, $timeout) {
+function postsView($scope, postTitlesCats, $stateParams, $rootScope, $timeout, hoverHighlightService) {
 	var postsView = this;
 	var catParam = $stateParams.catName ? $stateParams.catName.toLowerCase() : null;
 	postsView.posts = !catParam ? postTitlesCats : _.filter(postTitlesCats, function(post){return post.category == catParam;});
+	$scope.showCat = function(cat){
+		hoverHighlightService.menuActive(cat);
+	}
+	$scope.hideCat = function(cat){
+		hoverHighlightService.menuInactive(cat);
+	}	
 }
 function singleView($scope, postTitlesCats, singlePost, $sce, $ocLazyLoad, Utility, postsHandler, $timeout, $rootScope) {
 	var singleView = this;
@@ -443,7 +488,7 @@ function singleView($scope, postTitlesCats, singlePost, $sce, $ocLazyLoad, Utili
 	$scope.postOrder = $rootScope.browseByCat ? postTitlesCats : postsInCategoryOrder;
 	updateLinks($scope.postOrder);
 }
-function nav($scope, $rootScope, postTitlesCats, postsHandler) {
+function nav($scope, $rootScope, postTitlesCats, postsHandler, hoverHighlightService) {
 	var nav = this;
 	nav.posts = postTitlesCats;
 	nav.categories = postsHandler.getCats(postTitlesCats);
