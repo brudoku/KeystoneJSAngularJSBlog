@@ -17,6 +17,7 @@ html
 			#header.container
 				<a ui-sref='topView.posts' class="logo">Programming and Music Production</a>
 			<div ui-view class="container main-ui"></div>
+			include ../../public/react/helloworld.html
 			#footer.container
 		script(src='/assets/js/jquery/jquery-1.11.2.min.js')
 		script(src='/assets/js/bootstrap/bootstrap-3.3.4.min.js')
@@ -26,7 +27,9 @@ html
 		script(src='/assets/js/libs/ocLazyLoad.js')
 		script(src='/assets/js/libs/lodash.js')
 		script(src='/assets/js/libs/snabbt.js')
-
+		//- script(src='/assets/js/react/react.js')
+		//- script(src='/assets/js/react/react-dom.js')
+		//- script(src='/assets/js/react/browser.min.js')
 		script(src='/app.js')
 
 		if user && user.canAccessKeystone
