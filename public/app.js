@@ -1,6 +1,8 @@
 (function () {
- app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate'])
-.config(function config($stateProvider, $urlRouterProvider) {
+ app = angular.module('app', ['ui.router', 'oc.lazyLoad', 'ngAnimate', 'plangular'])
+.config(function config($stateProvider, $urlRouterProvider, plangularConfigProvider, $sceProvider) {
+	$sceProvider.enabled(false);
+	plangularConfigProvider.clientId = '84e9cf5d4eb301b3521fb5448ccf0535';
 	$stateProvider
 	.state('topView',{
 		url: '',
@@ -82,7 +84,7 @@
 	}
 	shared.broadcastInactive = function(){
 		$rootScope.$broadcast('broadcastInactive');
-	}	
+	}
 	return shared;
 })
 .service('PostHelper', function(PostsAPI, $q, PostsCache, $timeout) {
@@ -364,9 +366,9 @@
 			opacity: 1,
 			fromOpacity: 0,
 			duration: 200,
-			fromScale: [0.6,0.6],
+			fromScale: [0.8,0.8],
 			scale: [1,1],
-			fromPosition: [0,-distance,0],
+			fromPosition: [0,0,0],
 			position: [0,0,0],
 			easing: 'easeIn',
 			position: [0,0,0]
@@ -435,6 +437,14 @@
 		}
 	}
 })
+.directive('testDirective', function(){
+	return{
+		link: function(scope, elem){
+			elem.html('muh directive');
+			// log(elem);
+		}
+	}
+})
 .run(['$rootScope', '$state', function($rootScope, $state) {
 	//add state to rootscope for access to state
 	$rootScope.$state = $state;
@@ -451,12 +461,14 @@ function postsView($scope, postTitlesCats, $stateParams, $rootScope, $timeout, h
 	}
 	$scope.hideCat = function(cat){
 		hoverHighlightService.menuInactive(cat);
-	}	
+	}
 }
-function singleView($scope, postTitlesCats, singlePost, $sce, $ocLazyLoad, Utility, postsHandler, $timeout, $rootScope) {
+function singleView($scope, postTitlesCats, singlePost, $sce, $ocLazyLoad, Utility, postsHandler, $timeout, $rootScope, $compile) {
 	var singleView = this;
 	singleView.title = $sce.trustAsHtml(singlePost.title);
-	singleView.content = $sce.trustAsHtml(singlePost.content.extended);
+	var content = $sce.trustAsHtml(singlePost.content.extended);
+	singleView.content = $compile(content)($scope);
+	// singleView.content = content;
 	singleView.cat = $sce.trustAsHtml(singlePost.cat);
 	singleView.image = singlePost.image ? singlePost.image.url : undefined;
 	singleView.hasImage = function(postImage) {return (postImage == undefined ? false : true)};
@@ -474,6 +486,12 @@ function singleView($scope, postTitlesCats, singlePost, $sce, $ocLazyLoad, Utili
 		var cat = postsHandler.getCategoryBySlug(postTitlesCats, singlePost.slug).category;
 		return post.category == cat;
 	});
+	/*
+	$scope.$watch(singleView.content, function(foo){
+		log('foo');
+		$compile(singleView.content)($scope);
+	});
+	*/
 	$scope.browseBy = function() {
 		$rootScope.browseByCat = $rootScope.browseByCat === false ? true : false;
 		$scope.postOrder = $rootScope.browseByCat ? postTitlesCats : postsInCategoryOrder;

@@ -9,6 +9,9 @@ html
 		link(href="/assets/styles/bootstrap.min.css", rel="stylesheet")
 		link(href="/assets/styles/site/layout.css", rel="stylesheet")
 		link(href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet')
+		link(rel="stylesheet" href="http://d2v52k3cl9vedd.cloudfront.net/bassdock/1.2.1/bassdock.min.css")
+		link(rel="stylesheet" href="http://d2v52k3cl9vedd.cloudfront.net/vhs/0.1.0/vhs.min.css")
+
 		if user && user.canAccessKeystone
 			link(href="/keystone/styles/content/editor.min.css", rel="stylesheet")
 		block css
@@ -17,7 +20,11 @@ html
 			#header.container
 				<a ui-sref='topView.posts' class="logo">Programming and Music Production</a>
 			<div ui-view class="container main-ui"></div>
-			include ../../public/react/helloworld.html
+			<div plangular class="fixed right-0 bottom-0 p2">
+			<button ng-if="player.playing" ng-click="pause()" class="button button-small black bg-red vhs-bottom">
+			<svg class="icon geomicon" data-icon="pause" viewBox="0 0 32 32" width="32" height="32" style="fill:currentcolor;top:-.0625em"><path d="M4 4 H12 V28 H4 z M20 4 H28 V28 H20 z "></path></svg>Pause
+			</button>
+			</div>
 			#footer.container
 		script(src='/assets/js/jquery/jquery-1.11.2.min.js')
 		script(src='/assets/js/bootstrap/bootstrap-3.3.4.min.js')
@@ -27,9 +34,7 @@ html
 		script(src='/assets/js/libs/ocLazyLoad.js')
 		script(src='/assets/js/libs/lodash.js')
 		script(src='/assets/js/libs/snabbt.js')
-		//- script(src='/assets/js/react/react.js')
-		//- script(src='/assets/js/react/react-dom.js')
-		//- script(src='/assets/js/react/browser.min.js')
+		script(src='/assets/js/angular/plangular.js')
 		script(src='/app.js')
 
 		if user && user.canAccessKeystone
