@@ -1,14 +1,17 @@
 <ui-view class="cat-anim row" name="menu">
 	<div class="panel cat-list">
-	<!-- <div class="panel cat-list" data-highlight-categories> -->
 		<li ng-repeat="cat in nav.categories" ng-class="nav.isCategorySelected(cat)" class="{{cat}}">
 			<span class="bullet {{cat}}">
 				<span class="pointer">
 				</span>
 			</span>
-			<a ui-sref="topView.filterPosts({ catName: cat })">{{cat}}</a>
+			<a ui-sref="topView.filterPosts({ catName: cat })" class="hoverHighlight">{{cat}}</a>
 		</li>
-	</div>
+  </div>
+  <animated-line />
+<!--   <svg width="100%" height="1px" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 0 l 7000 0" stroke="#999" fill="transparent"/>
+  </svg>  -->
 </ui-view>
 
 <ui-view class="post-anim" name="posts"></ui-view>

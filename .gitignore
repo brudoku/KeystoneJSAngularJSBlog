@@ -35,3 +35,9 @@ grunt/
 bootstrap/
 public/styles/site.css
 public/data
+public/assets/styles/site/plangular.css
+public/assets/js/ui-bootstrap/popover/popover-html.html
+public/assets/js/ui-bootstrap/popover/popover-template.html
+public/assets/js/ui-bootstrap/popover/popover.html
+public/assets/js/ui-bootstrap/ui-bootstrap-custom-1.1.0.js
+public/assets/js/ui-bootstrap/ui-bootstrap-custom-tpls-1.1.0.js

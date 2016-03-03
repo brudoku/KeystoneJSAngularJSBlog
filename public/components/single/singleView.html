@@ -1,34 +1,18 @@
 <div class="single-ui">
 	<div class="controls">
+		<span>Browse by:</span>
 		<input id="browseBy" ng-click="browseBy()" ng-model="$rootScope.browseByCat" ng-checked="$root.browseByCat"class="toggle toggle-yes-no" type="checkbox" checked>
 		<label for="browseBy" data-on="Date" data-off="Category"></label>
 	</div>
 	<div class="single-nav">
-		<a class="left-nav {{singleView.prev.cat}} nav-anim" data-direction="left" data-slug="{{singleView.prev.slug}}" href="#/{{singleView.prev.slug}}/"><span class="pull-left">{{singleView.prev.title}}</span></a>
-		<a class="right-nav {{singleView.next.cat}} nav-anim" data-direction="right" data-slug="{{singleView.next.slug}}" href="#/{{singleView.next.slug}}/"><span class="pull-right">{{singleView.next.title}}</span></a>
+		<a class="left-nav {{singleView.prev.cat}} nav-anim hoverHighlight" data-direction="left" data-slug="{{singleView.prev.slug}}" href="#/{{singleView.prev.slug}}/"><span class="pull-left">{{singleView.prev.title}}</span></a>
+		<a class="right-nav {{singleView.next.cat}} nav-anim hoverHighlight" data-direction="right" data-slug="{{singleView.next.slug}}" href="#/{{singleView.next.slug}}/"><span class="pull-right">{{singleView.next.title}}</span></a>
 	</div>
 	<div class="single-content">
 		<h2 class="{{singleView.cat}}">{{singleView.title}}</h2>
 		<p ng-bind-html="singleView.content"></p>
 		<div ng-if="singleView.hasImage(image)">
 			<img ng-src="{{singleView.image}}" />
-		</div>
-		<div plangular="https://soundcloud.com/zoonak/zoonak-give" test-Directive class="p2 mb3 flex flex-center bg-darken-2 rounded"><button ng-click="playPause()" title="Play/Pause" class="flex-none h2 mr2 button button-transparent button-grow rounded"> <svg ng-if="player.playing !== track.src" class="icon geomicon" data-icon="play" viewbox="0 0 32 32" width="32" height="32" style="fill: currentcolor;"><path d="M4 4 L28 16 L4 28 z "></path></svg> <svg ng-if="player.playing === track.src" class="icon geomicon" data-icon="pause" viewbox="0 0 32 32" width="32" height="32" style="fill: currentcolor;"><path d="M4 4 H12 V28 H4 z M20 4 H28 V28 H20 z "></path></svg> </button>
-			<h2 class="h4 caps flex-auto m0">{{track.user.username}} - {{track.title}}</h2>
-			<samp class="h6">{{ currentTime | hhmmss }} / {{ duration | hhmmss }}</samp>
-			<div class="progress-and-comments">
-				<progress class="progress" ng-click="seek($event)" ng-value="currentTime / duration || 0"> {{ currentTime / duration }} </progress>
-				<div class="comments-bar">
-					<ul>
-						<li ng-repeat="comment in track.comments" ng-style="{left:setPosition(comment.timestamp)}"></li>
-					</ul>
-				</div>
-				<div class="comments-display">
-					<ul>
-						<li ng-repeat="comment in currentComments" ng-bind="comment.body"></li>
-					</ul>
-				</div>
-			</div>
 		</div>
 	</div>
 </div>

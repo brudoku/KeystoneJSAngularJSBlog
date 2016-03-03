@@ -437,11 +437,46 @@
 		}
 	}
 })
-.directive('testDirective', function(){
+.directive('animatedLine', function(){
 	return{
+		replace: true,
+		// scope: {foo:@},
+		template: '<svg width="100%" height="1px" version="1.1" xmlns="http://www.w3.org/2000/svg">' +
+				  '<path id="theLine" d="M0 0 l {{lineTo}} 0" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);" stroke="#aaa" ' + 
+				  'stroke-width="3" stroke="#ff0" display="inline-block" fill="transparent"/></svg>',
+				  // + '<filter id="pictureFilter" ><feGaussianBlur stdDeviation="5" /></filter></svg>',
+
 		link: function(scope, elem){
-			elem.html('muh directive');
-			// log(elem);
+			var tid;
+			scope.lineTo = 700;
+			function start(count){
+			  var self = this;
+			  var mf = myFn.call(self, count);
+				tid = setInterval(mf,10);
+			}
+
+			function stop(){
+			  	clearInterval(tid);
+			}
+
+			function myFn(count){
+				return function(){
+			  	count++;
+			    setPathTo(count);
+			    console.log("myFn: " + count)
+				}
+			}
+
+			function setPathTo(percent){
+			    var path = $('#theLine').get(0);
+			    log($(elem).find('svg'))
+			    var pathLen = path.getTotalLength();
+			    var adjustedLen = percent * pathLen / 80;
+			    path.setAttribute('stroke-dasharray', adjustedLen+' '+pathLen);
+			}
+
+			start(0);
+			setTimeout(stop, 1000);
 		}
 	}
 })

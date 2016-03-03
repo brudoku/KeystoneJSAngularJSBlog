@@ -7,18 +7,17 @@ html
 		title= title || 'Programming and Music Production'
 		link(rel="shortcut icon", href="/favicon.ico", type="image/x-icon")
 		link(href="/assets/styles/bootstrap.min.css", rel="stylesheet")
-		link(href="/assets/styles/site/layout.css", rel="stylesheet")
-		link(href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet')
-		link(rel="stylesheet" href="http://d2v52k3cl9vedd.cloudfront.net/bassdock/1.2.1/bassdock.min.css")
+		//- link(rel="stylesheet" href="/assets/styles/basscss.css")
 		link(rel="stylesheet" href="http://d2v52k3cl9vedd.cloudfront.net/vhs/0.1.0/vhs.min.css")
-
+		link(href="/assets/styles/layout.css", rel="stylesheet")
+		link(href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet')
 		if user && user.canAccessKeystone
 			link(href="/keystone/styles/content/editor.min.css", rel="stylesheet")
 		block css
 		block head
 		body(ng-app="app")
 			#header.container
-				<a ui-sref='topView.posts' class="logo">Programming and Music Production</a>
+				<a ui-sref='topView.posts' class="logo hoverHighlight">Programming and Music Production</a>
 			<div ui-view class="container main-ui"></div>
 			<div plangular class="fixed right-0 bottom-0 p2">
 			<button ng-if="player.playing" ng-click="pause()" class="button button-small black bg-red vhs-bottom">

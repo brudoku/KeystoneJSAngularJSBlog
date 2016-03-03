@@ -28,7 +28,7 @@
 // 	};
 
 // 	var configs = require('load-grunt-configs')(grunt, options);
-	
+
 // 	// Project configuration.
 // 	grunt.initConfig(configs);
 
@@ -56,7 +56,6 @@
 
 // };
 
-
 module.exports = function(grunt) {
     'use strict';
 
@@ -67,22 +66,37 @@ module.exports = function(grunt) {
             dev: {
                 options: {
                     sourceMap: true,
-                    sourceMapFilename: 'public/assets/styles/site/layout.map'
+                    sourceMapFilename: 'public/assets/styles/layout.map'
                 },
                 files: {
-                    'public/assets/styles/site/layout.css': 'public/assets/styles/site/layout.less'
+                    'public/assets/styles/layout.css': 'public/assets/styles/layout.less'
                 }
             }
         },
+        // postcss: {
+        //     options: {
+        //         map: true,
+        //         processors: [
+        //             require('autoprefixer')({
+        //                 browsers: ['last 2 versions']
+        //             })
+        //         ]
+        //     },
+        //     dist: {
+        //         src: 'public/assets/styles/site/layout.less'
+        //     }
+        // },
         watch: {
             all: {
-                files: ['public/assets/styles/site/**/*.less'],
-                tasks: ['less'],
+                files: ['public/assets/styles/**/*.less']
+                // ,                tasks: ['less', 'autoprefixer'],
             }
         }
     });
-
     grunt.loadNpmTasks('grunt-contrib-watch');
-  	grunt.loadNpmTasks('grunt-contrib-less');
-  	grunt.registerTask('default', ['less', 'watch']);
+    grunt.loadNpmTasks('grunt-contrib-less');
+    // grunt.loadNpmTasks('grunt-postcss');
+    grunt.registerTask('default', ['less', 'watch']);
+    // grunt.registerTask('default', ['less', 'autoprefixer', 'watch']);
+
 };
