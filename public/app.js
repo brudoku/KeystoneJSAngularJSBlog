@@ -440,43 +440,46 @@
 .directive('animatedLine', function(){
 	return{
 		replace: true,
-		// scope: {foo:@},
-		template: '<svg width="100%" height="1px" version="1.1" xmlns="http://www.w3.org/2000/svg">' +
-				  '<path id="theLine" d="M0 0 l {{lineTo}} 0" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);" stroke="#aaa" ' + 
-				  'stroke-width="3" stroke="#ff0" display="inline-block" fill="transparent"/></svg>',
+		scope: {lineTo:'@'},
+		template: '<svg width="100%" height="1px" version="1.1"  ng-cloak xmlns="http://www.w3.org/2000/svg">' +
+				  '<path id="theLine" d="M0 0 l {{lineTo}} 0" opacity="0" style="-webkit-tap-highlight-color: rgba(255, 0, 0, 0);" ' + 
+				  'stroke-width="9" stroke="#f00" display="inline-block" fill="transparent"/></svg>',
 				  // + '<filter id="pictureFilter" ><feGaussianBlur stdDeviation="5" /></filter></svg>',
 
-		link: function(scope, elem){
-			var tid;
+		link: function(scope, elem, attr){
+			var timerID;
 			scope.lineTo = 700;
-			function start(count){
+			/**scope.lineTo = attr.lineLength;
+			get lineTo value from parent container..?*/
+			function startTimer(count){
 			  var self = this;
-			  var mf = myFn.call(self, count);
-				tid = setInterval(mf,10);
+			  var incrementPath = pathUpdater.call(self, count);
+				timerID = setInterval(incrementPath,10);
 			}
 
-			function stop(){
-			  	clearInterval(tid);
+			function stopTimer(){
+			  	clearInterval(timerID);
 			}
 
-			function myFn(count){
+			function pathUpdater(count){
 				return function(){
-			  	count++;
-			    setPathTo(count);
-			    console.log("myFn: " + count)
+				  	count++;
+				    setPathTo(count);
 				}
 			}
 
 			function setPathTo(percent){
 			    var path = $('#theLine').get(0);
-			    log($(elem).find('svg'))
 			    var pathLen = path.getTotalLength();
-			    var adjustedLen = percent * pathLen / 80;
+			    var adjustedLen = percent * pathLen / 75;
 			    path.setAttribute('stroke-dasharray', adjustedLen+' '+pathLen);
+			    $('#theLine').css("opacity","1");
+			    if(adjustedLen >= pathLen){
+			    	stopTimer();
+			    }
 			}
 
-			start(0);
-			setTimeout(stop, 1000);
+			startTimer(0);
 		}
 	}
 })
@@ -521,12 +524,6 @@ function singleView($scope, postTitlesCats, singlePost, $sce, $ocLazyLoad, Utili
 		var cat = postsHandler.getCategoryBySlug(postTitlesCats, singlePost.slug).category;
 		return post.category == cat;
 	});
-	/*
-	$scope.$watch(singleView.content, function(foo){
-		log('foo');
-		$compile(singleView.content)($scope);
-	});
-	*/
 	$scope.browseBy = function() {
 		$rootScope.browseByCat = $rootScope.browseByCat === false ? true : false;
 		$scope.postOrder = $rootScope.browseByCat ? postTitlesCats : postsInCategoryOrder;
@@ -556,5 +553,4 @@ function nav($scope, $rootScope, postTitlesCats, postsHandler, hoverHighlightSer
 		return ret;
 	}
 }
-function log(msg) {	console.log(msg)}
 })();
