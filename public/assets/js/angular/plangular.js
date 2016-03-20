@@ -439,9 +439,9 @@ plangular.directive('plangular', ['$timeout', 'plangularConfig', '$http', functi
       scope.playlist;
       scope.tracks = [];
       scope.currentComments = [
-      {body:'x'},
+      /*{body:'x'},
       {body:'y'},
-      {body:'1'}];
+      {body:'1'}*/];
       if (!client_id) {
         var message = [
           'You must provide a client_id for Plangular',
@@ -577,12 +577,15 @@ plangular.directive('plangular', ['$timeout', 'plangularConfig', '$http', functi
 
         })
 
+/*
         if(scope.currentComments.length > 0){
           console.log('*************************');
           console.log(scope.currentComments);
         }else{
           console.log('none');
         }
+*/
+
       }
 
     }
