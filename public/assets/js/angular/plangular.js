@@ -570,22 +570,14 @@ plangular.directive('plangular', ['$timeout', 'plangularConfig', '$http', functi
       var showComments = function() {
         var currentPos = player.audio.currentTime * 1000;
         scope.$apply(function() {
-          scope.currentComments = _.filter(scope.track.comments, function(comment){
+          scope.currentComments = _.sortBy(_.filter(scope.track.comments, function(comment){
             return currentPos >= comment.timestamp && currentPos <= comment.timestamp + 4000;
-          });
-
+          })
+          , function(cmt){
+            return cmt.id;
+          })
 
         })
-
-/*
-        if(scope.currentComments.length > 0){
-          console.log('*************************');
-          console.log(scope.currentComments);
-        }else{
-          console.log('none');
-        }
-*/
-
       }
 
     }
