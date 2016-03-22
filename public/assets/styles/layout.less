@@ -457,6 +457,9 @@ input.toggle-yes-no:checked + label {
 }
 
 
+.d3{
+	text-align: center;
+}
 
 a { word-wrap: break-word }
 code {
@@ -493,26 +496,78 @@ code {
 	/*display: flex;*/
 	width: 100%;
 }
-
+.comments-display{
+  position: relative;
+  top: 80px;
+  height: 60px;
+}
+.comments-display ul{
+  padding: 0px;
+}
 .comments-display li{
 	list-style-type: none;
+  font-size: 12px;
 }
+.fade{
+  transition: all linear 200ms;
+  -webkit-transition: all linear 200ms;
+}
+.fade.ng-enter{
+  color:red;
+}
+
+.fade.ng-leave{
+  color:red;
+}
+
 .progress-and-comments progress, .progress-and-comments div {
-	flex-direction: column;
+  flex-direction: column;
 }
 .comments-bar {
-	position: relative;
-	display: block;
-	width: 100%;
-	/*height: .5625rem;*/
+  position: relative;
+  display: block;
+  width: 100%;
+  /*height: .5625rem;*/
 }
 .comments-bar li {
-	position: absolute;
-    list-style-type: none;
+  position: absolute;
+  list-style-type: none;
 }
 
 
-.comments-bar li img{
-	width: 30px;
+.comment-pic{
+	width: 20px;
 }
 
+.comment-username{
+  font-weight: bold;
+}
+
+.profile-display{
+    position: relative;
+    left: -200px;
+    top: 20px;
+    width: 150px;
+    font-size: 12px;
+}
+
+/*.fade {
+  transition: 1s linear all;
+  -webkit-transition: 1s linear all;
+}
+
+.fade.ng-enter {
+  opacity: 0;
+}
+
+.fade.ng-enter.ng-enter-active {
+  opacity: 1;
+}
+
+.fade.ng-leave {
+  opacity: 1;
+}
+
+.fade.ng-leave.ng-leave-active {
+  opacity: 0;
+}*/
