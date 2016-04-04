@@ -20,10 +20,16 @@ html
 				<a ui-sref='topView.posts' class="logo hoverHighlight">Programming and Music Production</a>
 			<div ui-view class="container main-ui"></div>
 			<div plangular class="fixed right-0 bottom-0 p2">
-			<button ng-if="player.playing" ng-click="pause()" class="button button-small black bg-red vhs-bottom">
-			<svg class="icon geomicon" data-icon="pause" viewBox="0 0 32 32" width="32" height="32" style="fill:currentcolor;top:-.0625em"><path d="M4 4 H12 V28 H4 z M20 4 H28 V28 H20 z "></path></svg>Pause
+			<button ng-if="player.playing" ng-click="pause()" class="button button-small black bg-teal vhs-bottom">
+			<svg class="icon geomicon" data-icon="pause" viewBox="0 0 32 32" width="32" height="32" style="fill:currentcolor;top:-.0625em"><path d="M4 4 H12 V28 H4 z M20 4 H28 V28 H20 z "></path></svg>
+			Pause
+			</button>
+			<button ng-click="muteUnmute()" ng-if="player.playing" class="button button-small black bg-teal vhs-bottom">
+			<span ng-if="player.muted == false">Mute</span>
+			<span ng-if="player.muted == true">Unmute</span>
 			</button>
 			</div>
+			<svg class="icon geomicon" data-icon="pause" viewBox="0 0 32 32" width="32" height="32" style="fill:currentcolor;top:-.0625em"><path d="M4 4 H12 V28 H4 z M20 4 H28 V28 H20 z "></path></svg>Pause
 			#footer.container
 		script(src='/assets/js/jquery/jquery-1.11.2.min.js')
 		script(src='/assets/js/bootstrap/bootstrap-3.3.4.min.js')

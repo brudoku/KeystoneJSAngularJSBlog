@@ -5,7 +5,7 @@ var audio = require('./lib/audio');
 module.exports = function() {
 
   this.playing = false;
-
+  this.muted = false;
   this.audio = audio;
   //this.currentTime = audio.currentTime;
   //this.duration = audio.duration;
@@ -28,13 +28,14 @@ module.exports = function() {
       this.pause();
     }
   }
-
+  this.muteUnmute = function(){
+    audio.muted = audio.muted == false ? true : false;
+  }
   this.seek = function(e) {
     if (!audio.readyState) return false;
     var percent = e.offsetX / e.target.offsetWidth || (e.layerX - e.target.offsetLeft) / e.target.offsetWidth;
     var time = percent * audio.duration || 0;
     audio.currentTime = time;
-    console.log(audio)
   }
 
   this.init = function() {
@@ -413,6 +414,8 @@ if (typeof module !== 'undefined') module.exports = corslite;
 'use strict';
 
 var plangular = angular.module('plangular', []);
+// var ngAnimate = angular.module('ngAnimate', []);
+
 var resolve = require('soundcloud-resolve-jsonp');
 var Player = require('audio-player');
 var hhmmss = require('hhmmss');
@@ -438,10 +441,7 @@ plangular.directive('plangular', ['$timeout', 'plangularConfig', '$http', functi
       scope.index = 0;
       scope.playlist;
       scope.tracks = [];
-      scope.currentComments = [
-      /*{body:'x'},
-      {body:'y'},
-      {body:'1'}*/];
+      scope.currentComments = [];
       if (!client_id) {
         var message = [
           'You must provide a client_id for Plangular',
@@ -487,25 +487,24 @@ plangular.directive('plangular', ['$timeout', 'plangularConfig', '$http', functi
       }
 
       scope.getUser = function(userId){
-        resolve({ url: 'https://api.soundcloud.com/users/' + userId, client_id: client_id }, function(err, res) {
+/*        resolve({ url: 'https://api.soundcloud.com/users/' + userId, client_id: client_id }, function(err, res) {
           if (err) {
             console.log('Could not get user.');
             console.error(err);
           }
-          console.log('no error');
-          console.log(res);
           scope.$apply(function(){
             scope.profile = {
               username: res.username,
               followers_count: res.followers_count,
-              followings_count: res.followings_count
+              followings_count: res.followings_count,
+              avatar_url: res.avatar_url
             }
           })
-        });
+        });*/
       }
 
-      scope.profile = "foo";
-
+      scope.profile = "profile";
+      
       scope.play = function(i) {
         if (typeof i !== 'undefined' && scope.tracks.length) {
           scope.index = i;
@@ -528,7 +527,6 @@ plangular.directive('plangular', ['$timeout', 'plangularConfig', '$http', functi
         getComments(scope.track);
       };
 
-      // var commentMap = [];
       var getComments = function (track) {
         var config = { method: 'GET', url: track.commentsSrc };
         $http(config).then(function (res) {
@@ -559,7 +557,14 @@ plangular.directive('plangular', ['$timeout', 'plangularConfig', '$http', functi
           scope.player.seek(e);
         }
       };
+      scope.mute = function(){
+        scope.player.mute();
+      }
+      scope.muteUnmute = function(){
+        player.muted = player.muted == false ? true : false;
+        player.muteUnmute();
 
+      }
       scope.setPosition = function(timestamp){
         var width = angular.element(elem[0]).find('progress')[0].getBoundingClientRect().width;
         return '' + ( (timestamp/1000).toFixed(1) / scope.duration * width ).toFixed(1) + 'px';
